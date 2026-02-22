@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mohammed Gaffar | Portfolio</title>
+    <meta name="description"
+        content="Portfolio of Mohammed Gaffar — Class 12 Computer Science student passionate about Python and creative problem solving." />
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap"
+        rel="stylesheet" />
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+    <!-- Main Stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+
+<body>
+
+    <!-- ═══════════════ SCROLL PROGRESS BAR ═══════════════ -->
+    <div class="scroll-progress" id="scrollProgress"></div>
+
+    <!-- ═══════════════ PRELOADER ═══════════════ -->
+    <div class="preloader" id="preloader">
+        <div class="preloader-inner">
+            <div class="preloader-circle"></div>
+            <span class="preloader-text">Loading<span class="dots">...</span></span>
+        </div>
+    </div>
+
+    <!-- ═══════════════ NAVBAR ═══════════════ -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <a href="#hero" class="nav-logo">
+                <span class="logo-bracket">&lt;</span>MG<span class="logo-bracket"> /&gt;</span>
+            </a>
+
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="#hero" class="nav-link active" data-section="hero">Home</a></li>
+                <li><a href="#about" class="nav-link" data-section="about">About</a></li>
+                <li><a href="#skills" class="nav-link" data-section="skills">Skills</a></li>
+                <li><a href="#projects" class="nav-link" data-section="projects">Work</a></li>
+                <li><a href="#contact" class="nav-link" data-section="contact">Contact</a></li>
+            </ul>
+
+            <div class="nav-actions">
+                <a href="#contact" class="nav-cta">Say Hello</a>
+                <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+                    <span></span><span></span><span></span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ═══════════════ HERO ═══════════════ -->
+    <section class="hero" id="hero">
+        <canvas class="hero-particles" id="particleCanvas"></canvas>
+        <div class="hero-aurora">
+            <div class="aurora-blob blob-1"></div>
+            <div class="aurora-blob blob-2"></div>
+            <div class="aurora-blob blob-3"></div>
+        </div>
+
+        <div class="hero-content">
+            <div class="hero-badge">
+                <span class="badge-dot"></span>
+                Class 12 CS Student &bull; Open to Projects
+            </div>
+
+            <h1 class="hero-title">
+                Hi, I'm <span class="gradient-text">Mohammed Gaffar</span>
+            </h1>
+
+            <div class="hero-subtitle">
+                I&nbsp;<span class="typed-text" id="typedText"></span><span class="typed-cursor">|</span>
+            </div>
+
+            <p class="hero-description">
+                I build things with code. Class 12 Computer Science student passionate about
+                Python and creative problem solving.
+            </p>
+
+            <div class="hero-buttons">
+                <a href="#projects" class="btn btn-primary">
+                    <span>View My Work</span>
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+                <a href="#contact" class="btn btn-outline">
+                    <span>Get In Touch</span>
+                    <i class="fas fa-paper-plane"></i>
+                </a>
+            </div>
+
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <span class="stat-number" data-target="{{ project_count }}">0</span><span
+                        class="stat-suffix">+</span>
+                    <span class="stat-label">Projects Built</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" data-target="6">0</span><span class="stat-suffix">+</span>
+                    <span class="stat-label">Skills Learned</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" data-target="100">0</span><span class="stat-suffix">%</span>
+                    <span class="stat-label">Passion</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="hero-scroll">
+            <a href="#about" class="scroll-indicator">
+                <span>Scroll Down</span>
+                <div class="scroll-mouse">
+                    <div class="scroll-wheel"></div>
+                </div>
+            </a>
+        </div>
+    </section>
+
+    <!-- ═══════════════ ABOUT ═══════════════ -->
+    <section class="section about" id="about">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-tag">&lt;about&gt;</span>
+                <h2 class="section-title">About <span class="gradient-text">Me</span></h2>
+                <p class="section-subtitle">Get to know the person behind the code</p>
+            </div>
+
+            <div class="about-grid">
+                <div class="about-image reveal reveal-left">
+                    <div class="image-wrapper">
+                        <div class="image-frame">
+                            <div class="image-placeholder">
+                                <i class="fas fa-user-astronaut"></i>
+                            </div>
+                        </div>
+                        <div class="image-decoration"></div>
+                        <div class="image-dots"></div>
+
+                        <!-- Tech Orbit Ring -->
+                        <div class="tech-orbit">
+                            <div class="orbit-ring">
+                                <div class="orbit-icon" style="--i:0"><i class="fab fa-python"></i></div>
+                                <div class="orbit-icon" style="--i:1"><i class="fab fa-html5"></i></div>
+                                <div class="orbit-icon" style="--i:2"><i class="fab fa-css3-alt"></i></div>
+                                <div class="orbit-icon" style="--i:3"><i class="fas fa-database"></i></div>
+                                <div class="orbit-icon" style="--i:4"><i class="fab fa-git-alt"></i></div>
+                                <div class="orbit-icon" style="--i:5"><i class="fab fa-github"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="about-content reveal reveal-right">
+                    <h3 class="about-heading">
+                        A student coder building the <span class="gradient-text">future with Python</span>
+                    </h3>
+                    <p class="about-text">
+                        I'm a Class 12 Computer Science student with a deep passion for programming and
+                        creative problem solving. My journey in tech started with Python, and I've been
+                        hooked ever since — exploring everything from desktop apps to web development.
+                    </p>
+                    <p class="about-text">
+                        I specialize in Python, Flask, SQL, and front-end technologies like HTML &amp; CSS.
+                        I love turning ideas into real, working applications and I'm always eager to
+                        learn new tools and frameworks.
+                    </p>
+
+                    <div class="about-details">
+                        <div class="detail-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span><strong>Location:</strong> India</span>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-envelope"></i>
+                            <span><strong>Email:</strong> gaffarofficial3018@gmail.com</span>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-graduation-cap"></i>
+                            <span><strong>Education:</strong> Class 12 — Computer Science</span>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-code"></i>
+                            <span><strong>Focus:</strong> Python &amp; Web Development</span>
+                        </div>
+                    </div>
+
+                    <a href="#contact" class="btn btn-primary">
+                        <span>Let's Connect</span>
+                        <i class="fas fa-handshake"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════ SKILLS ═══════════════ -->
+    <section class="section skills" id="skills">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-tag">&lt;skills&gt;</span>
+                <h2 class="section-title">My <span class="gradient-text">Skills</span></h2>
+                <p class="section-subtitle">Technologies and tools I work with</p>
+            </div>
+
+            <div class="skills-grid">
+                {% for category, items in skills.items() %}
+                <div class="skill-category reveal">
+                    <div class="category-header">
+                        <div class="category-icon">
+                            {% if 'Languages' in category %}
+                            <i class="fas fa-code"></i>
+                            {% else %}
+                            <i class="fas fa-tools"></i>
+                            {% endif %}
+                        </div>
+                        <h3>{{ category }}</h3>
+                    </div>
+                    <div class="skill-bars">
+                        {% for skill in items %}
+                        <div class="skill-bar">
+                            <div class="skill-info">
+                                <span class="skill-name">{{ skill.name }}</span>
+                                <span class="skill-percent">{{ skill.level }}%</span>
+                            </div>
+                            <div class="skill-track">
+                                <div class="skill-fill" data-width="{{ skill.level }}"></div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════ PROJECTS ═══════════════ -->
+    <section class="section projects" id="projects">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-tag">&lt;work&gt;</span>
+                <h2 class="section-title">Selected <span class="gradient-text">Work</span></h2>
+                <p class="section-subtitle">Projects I've built and shipped</p>
+            </div>
+
+            <div class="project-filters reveal">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="desktop">Desktop</button>
+                <button class="filter-btn" data-filter="web">Web</button>
+            </div>
+
+            <div class="projects-grid" id="projectsGrid">
+                {% for project in projects %}
+                <div class="project-card reveal" data-category="{{ project.category }}">
+                    <div class="project-image">
+                        <img src="{{ project.image }}" alt="{{ project.title }}" loading="lazy" />
+                        <div class="project-overlay">
+                            <div class="project-links">
+                                <a href="{{ project.github }}" class="project-link" title="Source Code" target="_blank">
+                                    <i class="fab fa-github"></i>
+                                </a>
+                                {% if project.live != '#' %}
+                                <a href="{{ project.live }}" class="project-link" title="Live Demo" target="_blank">
+                                    <i class="fas fa-external-link-alt"></i>
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="project-info">
+                        <h3 class="project-title">{{ project.title }}</h3>
+                        <p class="project-desc">{{ project.description }}</p>
+                        <div class="project-tech">
+                            {% for tech in project.tech %}
+                            <span class="tech-tag">{{ tech }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════ CONTACT ═══════════════ -->
+    <section class="section contact" id="contact">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-tag">&lt;contact&gt;</span>
+                <h2 class="section-title">Get In <span class="gradient-text">Touch</span></h2>
+                <p class="section-subtitle">Have a project in mind or just want to say hello?</p>
+            </div>
+
+            <div class="contact-grid">
+                <div class="contact-info reveal reveal-left">
+                    <h3>Let's build something <span class="gradient-text">amazing</span> together</h3>
+                    <p>Fill out the form and I'll get back to you. Or reach me directly at
+                        <a href="mailto:gaffarofficial3018@gmail.com"
+                            style="color:var(--accent-primary)">gaffarofficial3018@gmail.com</a>
+                    </p>
+
+                    <div class="contact-cards">
+                        <div class="contact-card glass-card">
+                            <div class="contact-card-icon"><i class="fas fa-envelope"></i></div>
+                            <div>
+                                <h4>Email</h4>
+                                <span>gaffarofficial3018@gmail.com</span>
+                            </div>
+                        </div>
+                        <div class="contact-card glass-card">
+                            <div class="contact-card-icon"><i class="fas fa-map-marker-alt"></i></div>
+                            <div>
+                                <h4>Location</h4>
+                                <span>India</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="social-links">
+                        <a href="https://github.com/mdgaffar3018" class="social-link" aria-label="GitHub"
+                            target="_blank"><i class="fab fa-github"></i></a>
+                        <a href="mailto:gaffarofficial3018@gmail.com" class="social-link" aria-label="Email"><i
+                                class="fas fa-envelope"></i></a>
+                    </div>
+                </div>
+
+                <div class="contact-form-wrapper reveal reveal-right">
+                    <form class="contact-form glass-card" id="contactForm">
+                        <div class="form-group">
+                            <input type="text" id="contactName" name="name" required placeholder=" " />
+                            <label for="contactName">Your Name</label>
+                            <div class="form-line"></div>
+                        </div>
+                        <div class="form-group">
+                            <input type="email" id="contactEmail" name="email" required placeholder=" " />
+                            <label for="contactEmail">Your Email</label>
+                            <div class="form-line"></div>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" id="contactSubject" name="subject" placeholder=" " />
+                            <label for="contactSubject">Subject</label>
+                            <div class="form-line"></div>
+                        </div>
+                        <div class="form-group">
+                            <textarea id="contactMessage" name="message" rows="5" required placeholder=" "></textarea>
+                            <label for="contactMessage">Your Message</label>
+                            <div class="form-line"></div>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-full" id="submitBtn">
+                            <span>Send Message</span>
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════ FOOTER ═══════════════ -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <span class="logo-bracket">&lt;</span>Gaffar<span class="logo-bracket"> /&gt;</span>
+                </div>
+                <p class="footer-text">Designed &amp; Built with <i class="fas fa-heart"
+                        style="color:var(--accent-primary)"></i> by Mohammed Gaffar</p>
+                <div class="footer-links">
+                    <a href="https://github.com/mdgaffar3018" aria-label="GitHub" target="_blank"><i
+                            class="fab fa-github"></i></a>
+                    <a href="mailto:gaffarofficial3018@gmail.com" aria-label="Email"><i class="fas fa-envelope"></i></a>
+                </div>
+                <p class="footer-copy">&copy; 2026 Mohammed Gaffar. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ═══════════════ BACK TO TOP ═══════════════ -->
+    <button class="back-to-top" id="backToTop" aria-label="Back to top">
+        <i class="fas fa-chevron-up"></i>
+    </button>
+
+    <!-- ═══════════════ TOAST ═══════════════ -->
+    <div class="toast" id="toast">
+        <div class="toast-icon"><i class="fas fa-check-circle"></i></div>
+        <span class="toast-message" id="toastMessage">Message sent!</span>
+    </div>
+
+    <!-- Main Script -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+
+</html>
