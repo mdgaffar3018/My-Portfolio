@@ -129,7 +129,6 @@
     <section class="section about" id="about">
         <div class="container">
             <div class="section-header reveal">
-                <span class="section-tag">&lt;about&gt;</span>
                 <h2 class="section-title">About <span class="gradient-text">Me</span></h2>
                 <p class="section-subtitle">Get to know the person behind the code</p>
             </div>
@@ -206,7 +205,6 @@
     <section class="section skills" id="skills">
         <div class="container">
             <div class="section-header reveal">
-                <span class="section-tag">&lt;skills&gt;</span>
                 <h2 class="section-title">My <span class="gradient-text">Skills</span></h2>
                 <p class="section-subtitle">Technologies and tools I work with</p>
             </div>
@@ -247,15 +245,15 @@
     <section class="section projects" id="projects">
         <div class="container">
             <div class="section-header reveal">
-                <span class="section-tag">&lt;work&gt;</span>
                 <h2 class="section-title">Selected <span class="gradient-text">Work</span></h2>
                 <p class="section-subtitle">Projects I've built and shipped</p>
             </div>
 
             <div class="project-filters reveal">
                 <button class="filter-btn active" data-filter="all">All</button>
-                <button class="filter-btn" data-filter="desktop">Desktop</button>
-                <button class="filter-btn" data-filter="web">Web</button>
+                {% for cat in categories %}
+                <button class="filter-btn" data-filter="{{ cat }}">{{ cat|capitalize }}</button>
+                {% endfor %}
             </div>
 
             <div class="projects-grid" id="projectsGrid">
@@ -295,7 +293,6 @@
     <section class="section contact" id="contact">
         <div class="container">
             <div class="section-header reveal">
-                <span class="section-tag">&lt;contact&gt;</span>
                 <h2 class="section-title">Get In <span class="gradient-text">Touch</span></h2>
                 <p class="section-subtitle">Have a project in mind or just want to say hello?</p>
             </div>

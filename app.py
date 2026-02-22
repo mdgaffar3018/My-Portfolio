@@ -1,6 +1,6 @@
 """
 Advanced Portfolio Website — Flask Backend
-Auto-fetches repos from GitHub so new projects appear automatically.
+100% auto-synced with GitHub — every repo change is reflected automatically.
 """
 import os
 import time
@@ -19,7 +19,7 @@ app = Flask(__name__)
 # ── Configuration ──────────────────────────────────────────────
 GITHUB_USERNAME = "mdgaffar3018"
 GITHUB_API_URL = f"https://api.github.com/users/{GITHUB_USERNAME}/repos"
-CACHE_TTL = 600  # refresh every 10 minutes
+CACHE_TTL = 60  # refresh every 60 seconds — catches renames/deletes fast
 
 SMTP_SERVER = os.getenv("SMTP_SERVER", "smtp.gmail.com")
 SMTP_PORT = int(os.getenv("SMTP_PORT", 587))
@@ -27,47 +27,27 @@ SMTP_EMAIL = os.getenv("SMTP_EMAIL", "")
 SMTP_PASSWORD = os.getenv("SMTP_PASSWORD", "")
 RECIPIENT_EMAIL = os.getenv("RECIPIENT_EMAIL", SMTP_EMAIL)
 
-# ── GitHub Repo Cache ──────────────────────────────────────────
-_cache = {"projects": None, "timestamp": 0}
+# ── GitHub Auto-Sync ───────────────────────────────────────────
+_cache = {"projects": [], "categories": set(), "timestamp": 0}
 
-# Custom enrichment data — keyed by EXACT repo name.
-# Any repo NOT listed here still shows up, just with auto-generated info.
-REPO_ENRICHMENT = {
-    "Nova-Multiflix-Website": {
-        "title": "Nova Multiflix — Streaming Website",
-        "category": "web",
-        "description": "A movie streaming website built with Flask, featuring a modern UI with HTML/CSS/JS and a Python backend. Deployed on Vercel.",
-        "tech": ["Python", "Flask", "HTML", "CSS", "JavaScript"],
-        "image": "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=600&q=80",
-        "live": "https://nova-multiflix-website.vercel.app",
-    },
-    "portfolio": {
-        "title": "Portfolio Website",
-        "category": "web",
-        "description": "Personal portfolio website showcasing projects and skills. Built with Flask backend and custom CSS frontend, hosted on PythonAnywhere.",
-        "tech": ["Python", "Flask", "HTML", "CSS"],
-        "image": "https://images.unsplash.com/photo-1517180102446-f3ece451e9d8?w=600&q=80",
-        "live": "https://gaffarportfolio.pythonanywhere.com",
-    },
-    "Finance-Tracker-Desktop-App": {
-        "title": "Finance Tracker — Desktop App",
-        "category": "desktop",
-        "description": "Python app using SQL + PyQt6 GUI to track personal finances. Features income/expense logging, category breakdowns, and visual charts.",
-        "tech": ["Python", "PyQt6", "SQL", "SQLite"],
-        "image": "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=600&q=80",
-        "live": "#",
-    },
-}
-
-# Language → tech-tag mapping for auto-detected repos
+# Language → tech-tag mapping
 LANG_MAP = {
     "Python": "Python", "HTML": "HTML", "CSS": "CSS",
     "JavaScript": "JavaScript", "TypeScript": "TypeScript",
-    "Java": "Java", "C++": "C++", "C": "C", "Shell": "Shell",
-    "Jupyter Notebook": "Jupyter",
+    "Java": "Java", "C++": "C++", "C": "C", "C#": "C#",
+    "Shell": "Shell", "Jupyter Notebook": "Jupyter",
+    "PHP": "PHP", "Ruby": "Ruby", "Go": "Go", "Rust": "Rust",
+    "Dart": "Dart", "Kotlin": "Kotlin", "Swift": "Swift",
 }
 
-# Stock images for auto-detected repos (rotates)
+# Rotating stock images by primary language
+LANG_IMAGES = {
+    "python":     "https://images.unsplash.com/photo-1526379095098-d400fd0bf935?w=600&q=80",
+    "html":       "https://images.unsplash.com/photo-1621839673705-6617adf9e890?w=600&q=80",
+    "css":        "https://images.unsplash.com/photo-1507721999472-8ed4421c4af2?w=600&q=80",
+    "javascript": "https://images.unsplash.com/photo-1579468118864-1b9ea3c0db4a?w=600&q=80",
+    "java":       "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=600&q=80",
+}
 DEFAULT_IMAGES = [
     "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=600&q=80",
     "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=600&q=80",
@@ -76,29 +56,55 @@ DEFAULT_IMAGES = [
 ]
 
 
-def _beautify_name(repo_name: str) -> str:
+def _beautify_name(repo_name):
     """Turn 'My-Cool-Repo' into 'My Cool Repo'."""
     return repo_name.replace("-", " ").replace("_", " ").title()
 
 
-def _detect_category(languages: dict) -> str:
-    """Guess project category from its language breakdown."""
-    langs = {k.lower() for k in languages}
-    if langs & {"html", "css", "javascript", "typescript"}:
+def _pick_image(primary_lang, idx):
+    """Pick a relevant image based on the primary language."""
+    if primary_lang:
+        img = LANG_IMAGES.get(primary_lang.lower())
+        if img:
+            return img
+    return DEFAULT_IMAGES[idx % len(DEFAULT_IMAGES)]
+
+
+def _detect_category(langs):
+    """Guess project category from its language list."""
+    lower = {l.lower() for l in langs}
+    if lower & {"html", "css", "javascript", "typescript", "php"}:
         return "web"
+    if lower & {"dart", "kotlin", "swift"}:
+        return "mobile"
     return "desktop"
 
 
-def fetch_github_projects() -> list:
-    """Fetch public repos from GitHub API and merge with enrichment data."""
+def _build_description(repo):
+    """Build a description from GitHub data."""
+    # Use GitHub description if set
+    if repo.get("description"):
+        return repo["description"]
+    # Auto-generate a simple one
+    lang = repo.get("language") or "code"
+    return f"A {lang} project — check it out on GitHub."
+
+
+def fetch_github_projects():
+    """
+    Fetch ALL public repos from GitHub API.
+    Everything is dynamic — titles from repo names, descriptions from GitHub,
+    live links from the homepage field, tech from the languages endpoint.
+    Renames, deletions, and new repos are all reflected automatically.
+    """
     now = time.time()
     if _cache["projects"] and (now - _cache["timestamp"]) < CACHE_TTL:
-        return _cache["projects"]
+        return _cache["projects"], _cache["categories"]
 
     try:
         resp = requests.get(
             GITHUB_API_URL,
-            params={"sort": "updated", "per_page": 30},
+            params={"sort": "pushed", "direction": "desc", "per_page": 30},
             timeout=8,
             headers={"Accept": "application/vnd.github.v3+json"},
         )
@@ -106,52 +112,57 @@ def fetch_github_projects() -> list:
         repos = resp.json()
     except Exception as e:
         print(f"[GitHub API] Error: {e}")
-        # Return cached data or hardcoded fallback
         if _cache["projects"]:
-            return _cache["projects"]
-        return _fallback_projects()
+            return _cache["projects"], _cache["categories"]
+        return [], set()
 
     projects = []
+    categories = set()
+
     for idx, repo in enumerate(repos):
-        if repo.get("fork"):        # skip forks
+        if repo.get("fork"):
             continue
 
         name = repo["name"]
-        enrichment = REPO_ENRICHMENT.get(name, {})
+        primary_lang = repo.get("language")
 
-        # Detect tech from GitHub languages endpoint
-        tech = enrichment.get("tech")
+        # Fetch languages from GitHub API
+        try:
+            lang_resp = requests.get(repo["languages_url"], timeout=5)
+            lang_resp.raise_for_status()
+            lang_data = lang_resp.json()
+            tech = [LANG_MAP.get(l, l) for l in lang_data.keys()]
+        except Exception:
+            tech = [primary_lang] if primary_lang else ["Python"]
+
         if not tech:
-            try:
-                lang_resp = requests.get(repo["languages_url"], timeout=5)
-                lang_resp.raise_for_status()
-                tech = [LANG_MAP.get(l, l) for l in lang_resp.json().keys()]
-            except Exception:
-                tech = [repo.get("language", "Python")] if repo.get("language") else ["Python"]
+            tech = [primary_lang] if primary_lang else ["Python"]
+
+        category = _detect_category(tech)
+        categories.add(category)
+
+        # Live link: use GitHub homepage field (set in repo settings)
+        live = repo.get("homepage") or "#"
+        # Clean up empty strings
+        if not live.strip():
+            live = "#"
 
         project = {
             "id": idx + 1,
-            "title": enrichment.get("title", _beautify_name(name)),
-            "category": enrichment.get("category", _detect_category(tech)),
-            "description": enrichment.get("description", repo.get("description") or f"A {repo.get('language', 'Python')} project."),
+            "title": _beautify_name(name),
+            "category": category,
+            "description": _build_description(repo),
             "tech": tech,
-            "image": enrichment.get("image", DEFAULT_IMAGES[idx % len(DEFAULT_IMAGES)]),
+            "image": _pick_image(primary_lang, idx),
             "github": repo["html_url"],
-            "live": enrichment.get("live", repo.get("homepage") or "#"),
+            "live": live,
         }
         projects.append(project)
 
     _cache["projects"] = projects
+    _cache["categories"] = categories
     _cache["timestamp"] = now
-    return projects
-
-
-def _fallback_projects() -> list:
-    """Hardcoded fallback if GitHub API is completely unreachable."""
-    return [
-        {"id": i + 1, **data, "github": f"https://github.com/{GITHUB_USERNAME}/{name}"}
-        for i, (name, data) in enumerate(REPO_ENRICHMENT.items())
-    ]
+    return projects, categories
 
 
 SKILLS = {
@@ -171,18 +182,19 @@ SKILLS = {
 # ── Routes ─────────────────────────────────────────────────────
 @app.route("/")
 def index():
-    projects = fetch_github_projects()
+    projects, categories = fetch_github_projects()
     return render_template(
         "index.html",
         projects=projects,
         skills=SKILLS,
         project_count=len(projects),
+        categories=sorted(categories),
     )
 
 
 @app.route("/api/projects")
 def api_projects():
-    projects = fetch_github_projects()
+    projects, _ = fetch_github_projects()
     category = request.args.get("category", "all")
     if category == "all":
         return jsonify(projects)
