@@ -428,81 +428,158 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    /* ── My Journey Timeline Animation ──────────────── */
-    const timeline = document.querySelector('.timeline');
-    if (timeline) {
-        const timelineDots = document.querySelectorAll('.timeline-dot');
+    /* ── Terminal Easter Egg ───────────────────────── */
+    const terminalInput = document.getElementById("terminalInput");
+    const terminalBody = document.getElementById("terminalBody");
 
-        function updateTimeline() {
-            const rect = timeline.getBoundingClientRect();
-            // Start animating when top of timeline is 80% down the screen
-            const windowHeight = window.innerHeight;
+    if (terminalInput && terminalBody) {
+        // Ensure input is always focused when clicking inside the terminal
+        document.querySelector(".terminal-container").addEventListener("click", () => {
+            terminalInput.focus();
+        });
 
-            // Calculate progress (0 to 1) based on scroll
-            let progress = 0;
-            const startScroll = rect.top - windowHeight * 0.8;
-            const endScroll = rect.bottom - windowHeight * 0.6;
+        const commands = {
+            help: `Available commands:
+  help       - Show this help message
+  whoami     - Display owner information
+  skills     - List technical skills
+  projects   - Show project statistics
+  education  - Display education history
+  contact    - Show contact information
+  clear      - Clear terminal screen
+  sudo       - ?????`,
+            whoami: `Mohammed Gaffar
+Class 12 Computer Science Student.
+Passionate about Python, Backend Development, and Problem Solving.`,
+            skills: `• Python (Flask, Automation)
+• HTML5 & CSS3 (UI/UX)
+• JavaScript (Interactivity)
+• SQL (Database Management)
+• Git & GitHub`,
+            projects: `Total projects shipped: {{ project_count }}
+Check the 'Works' section for details.`,
+            education: `Currently pursuing Class 12 Computer Science.
+Focusing on software development and building real-world applications.`,
+            contact: `Email: gaffarofficial3018@gmail.com
+GitHub: github.com/mdgaffar3018
+Location: India`,
+            sudo: `nice try. you do not have root privileges here.`
+        };
 
-            if (startScroll < 0) {
-                progress = Math.min(1, Math.abs(startScroll) / (endScroll - startScroll + Math.abs(startScroll)));
-            }
-            if (rect.top - windowHeight * 0.8 > 0) progress = 0;
-            if (rect.bottom - windowHeight * 0.6 < 0) progress = 1;
+        const commandList = Object.keys(commands);
+        let commandHistory = [];
+        let historyIndex = -1;
 
-            // Set CSS variable for the ::after progressive line height
-            timeline.style.setProperty('--timeline-progress', `${progress * 100}%`);
-
-            // Light up dots as the line reaches them
-            const timelineLineHeight = progress * timeline.offsetHeight;
-
-            timelineDots.forEach(dot => {
-                // Determine dot relative position within the timeline
-                const dotTop = dot.getBoundingClientRect().top - rect.top;
-                if (timelineLineHeight >= dotTop) {
-                    dot.classList.add('active');
-                } else {
-                    dot.classList.remove('active');
-                }
-            });
+        function printToTerminal(text, isError = false) {
+            const div = document.createElement("div");
+            div.className = "terminal-output" + (isError ? " error" : "");
+            // Basic HTML escaping
+            div.innerHTML = text.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            terminalBody.insertBefore(div, terminalInput.parentElement);
         }
 
-        window.addEventListener('scroll', updateTimeline);
-        updateTimeline(); // Init on load
-    }
+        function createPromptLine(cmd) {
+            const div = document.createElement("div");
+            div.className = "terminal-line";
+            div.innerHTML = `<span class="terminal-prompt">gaffar@portfolio:~$</span> ${cmd}`;
+            terminalBody.insertBefore(div, terminalInput.parentElement);
+        }
 
-    /* ── Advanced 3D Tilt Effect ───────────────────── */
-    const tiltCards = document.querySelectorAll('.tilt-card');
+        // Terminal Typewriter Effect for welcome message
+        const welcomeLines = terminalBody.querySelectorAll(".terminal-line");
+        if (welcomeLines.length >= 2) {
+            const line1 = welcomeLines[0];
+            const line2 = welcomeLines[1];
+            const text1 = line1.textContent;
+            const text2 = line2.textContent;
+            line1.textContent = "";
+            line2.textContent = "";
 
-    tiltCards.forEach(card => {
-        card.addEventListener('mousemove', e => {
-            const rect = card.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
+            let i = 0;
+            function typeOut1() {
+                if (i < text1.length) {
+                    line1.textContent += text1.charAt(i);
+                    i++;
+                    setTimeout(typeOut1, 30);
+                } else {
+                    i = 0;
+                    setTimeout(typeOut2, 100);
+                }
+            }
+            function typeOut2() {
+                if (i < text2.length) {
+                    line2.textContent += text2.charAt(i);
+                    i++;
+                    setTimeout(typeOut2, 30);
+                }
+            }
+            // Add a small delay so user can scroll down and see it type
+            const terminalObserver = new IntersectionObserver((entries) => {
+                if (entries[0].isIntersecting) {
+                    typeOut1();
+                    terminalObserver.disconnect();
+                }
+            }, { threshold: 0.5 });
+            terminalObserver.observe(document.querySelector(".terminal-section"));
+        }
 
-            const centerX = rect.width / 2;
-            const centerY = rect.height / 2;
+        terminalInput.addEventListener("keydown", function (e) {
+            // Command History Navigation
+            if (e.key === "ArrowUp") {
+                e.preventDefault();
+                if (commandHistory.length > 0 && historyIndex < commandHistory.length - 1) {
+                    historyIndex++;
+                    this.value = commandHistory[commandHistory.length - 1 - historyIndex];
+                }
+            } else if (e.key === "ArrowDown") {
+                e.preventDefault();
+                if (historyIndex > 0) {
+                    historyIndex--;
+                    this.value = commandHistory[commandHistory.length - 1 - historyIndex];
+                } else if (historyIndex === 0) {
+                    historyIndex = -1;
+                    this.value = "";
+                }
+            }
+            // Auto-complete
+            else if (e.key === "Tab") {
+                e.preventDefault();
+                const currentVal = this.value.trim().toLowerCase();
+                const match = commandList.find(cmd => cmd.startsWith(currentVal));
+                if (match) {
+                    this.value = match;
+                }
+            }
+            // Execute Command
+            else if (e.key === "Enter") {
+                const cmd = this.value.trim().toLowerCase();
+                this.value = "";
 
-            const maxTilt = 12; // Maximum tilt angle
+                if (cmd === "") return;
 
-            // Calculate rotation
-            const rotateX = ((y - centerY) / centerY) * -maxTilt;
-            const rotateY = ((x - centerX) / centerX) * maxTilt;
+                // Add to history
+                commandHistory.push(cmd);
+                historyIndex = -1;
 
-            card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+                createPromptLine(cmd);
 
-            // Optional shine effect
-            const shine = card.querySelector('.tilt-shine');
-            if (shine) {
-                shine.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(255,255,255,0.1) 0%, transparent 60%)`;
+                if (cmd === "clear") {
+                    const children = Array.from(terminalBody.children);
+                    children.forEach(child => {
+                        if (child !== terminalInput.parentElement) {
+                            child.remove();
+                        }
+                    });
+                } else if (commands[cmd]) {
+                    printToTerminal(commands[cmd]);
+                } else {
+                    printToTerminal(`Command not found: ${cmd}. Type 'help' for a list of commands.`, true);
+                }
+
+                terminalBody.scrollTop = terminalBody.scrollHeight;
             }
         });
-
-        card.addEventListener('mouseleave', () => {
-            card.style.transform = `perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)`;
-            const shine = card.querySelector('.tilt-shine');
-            if (shine) shine.style.background = 'transparent';
-        });
-    });
+    }
 
     /* ── Contact Form ──────────────────────────── */
     const contactForm = document.getElementById("contactForm");

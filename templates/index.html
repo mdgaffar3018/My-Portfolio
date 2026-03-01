@@ -267,75 +267,29 @@
         </div>
     </section>
 
-    <!-- ═══════════════ MY JOURNEY (TIMELINE) ═══════════════ -->
-    <section class="section journey" id="journey">
+    <!-- ═══════════════ INTERACTIVE TERMINAL ═══════════════ -->
+    <section class="section terminal-section" id="terminal">
         <div class="container">
             <div class="section-header reveal">
-                <h2 class="section-title">My <span class="gradient-text">Journey</span></h2>
-                <p class="section-subtitle">How I evolved as a student and developer</p>
+                <h2 class="section-title">Command <span class="gradient-text">Line</span></h2>
+                <p class="section-subtitle">Interact with my portfolio using terminal commands</p>
             </div>
-
-            <div class="timeline">
-                <div class="timeline-item right reveal">
-                    <div class="timeline-dot"><i class="fab fa-python"></i></div>
-                    <div class="timeline-card glass-card tilt-card">
-                        <div class="tilt-inner">
-                            <span class="timeline-period">Class 10</span>
-                            <h3 class="timeline-role">First Code Written</h3>
-                            <h4 class="timeline-company">Getting Started</h4>
-                            <p class="timeline-desc">
-                                Discovered the magic of programming and wrote my first "Hello World" in Python.
-                                Instantly got hooked on solving logic puzzles.
-                            </p>
-                            <div class="timeline-tags">
-                                <span class="tag">Python Basics</span>
-                                <span class="tag">Logic</span>
-                            </div>
-                        </div>
-                        <div class="tilt-shine"></div>
+            <div class="terminal-container reveal">
+                <div class="terminal-header">
+                    <div class="terminal-buttons">
+                        <div class="t-btn close"></div>
+                        <div class="t-btn minimize"></div>
+                        <div class="t-btn maximize"></div>
                     </div>
+                    <div class="terminal-title">bash - mdgaffar</div>
                 </div>
-
-                <div class="timeline-item reveal">
-                    <div class="timeline-dot"><i class="fas fa-laptop-code"></i></div>
-                    <div class="timeline-card glass-card tilt-card">
-                        <div class="tilt-inner">
-                            <span class="timeline-period">Class 11</span>
-                            <h3 class="timeline-role">Web Development Journey</h3>
-                            <h4 class="timeline-company">Self Taught</h4>
-                            <p class="timeline-desc">
-                                Dove deep into front-end technologies to bring ideas to visual life.
-                                Learned to build responsive, interactive interfaces.
-                            </p>
-                            <div class="timeline-tags">
-                                <span class="tag">HTML5</span>
-                                <span class="tag">CSS3</span>
-                                <span class="tag">JavaScript</span>
-                            </div>
-                        </div>
-                        <div class="tilt-shine"></div>
-                    </div>
-                </div>
-
-                <div class="timeline-item right reveal">
-                    <div class="timeline-dot"><i class="fas fa-graduation-cap"></i></div>
-                    <div class="timeline-card glass-card tilt-card">
-                        <div class="tilt-inner">
-                            <span class="timeline-period">Present</span>
-                            <h3 class="timeline-role">Class 12 Student</h3>
-                            <h4 class="timeline-company">Computer Science Focus</h4>
-                            <p class="timeline-desc">
-                                Mastering Python, Flask, and database connectivity.
-                                Building advanced real-world applications like Skill Gap Analyzers and automated
-                                portfolios.
-                            </p>
-                            <div class="timeline-tags">
-                                <span class="tag">Python</span>
-                                <span class="tag">Flask</span>
-                                <span class="tag">SQL</span>
-                            </div>
-                        </div>
-                        <div class="tilt-shine"></div>
+                <div class="terminal-body" id="terminalBody">
+                    <div class="terminal-line">Welcome to Gaffar's interactive portfolio terminal.</div>
+                    <div class="terminal-line">Type 'help' to see a list of available commands.</div>
+                    <div class="terminal-input-line">
+                        <span class="terminal-prompt">gaffar@portfolio:~$</span>
+                        <input type="text" class="terminal-input" id="terminalInput" autocomplete="off"
+                            spellcheck="false">
                     </div>
                 </div>
             </div>
