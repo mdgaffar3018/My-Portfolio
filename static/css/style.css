@@ -1617,6 +1617,8 @@ ul {
 .terminal-line {
     margin-bottom: 8px;
     line-height: 1.5;
+    min-height: 1.5em;
+    /* Prevents layout collapse when text is empty during typewriter effect */
 }
 
 .terminal-input-line {

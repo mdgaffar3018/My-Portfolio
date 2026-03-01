@@ -433,9 +433,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const terminalBody = document.getElementById("terminalBody");
 
     if (terminalInput && terminalBody) {
-        // Ensure input is always focused when clicking inside the terminal
-        document.querySelector(".terminal-container").addEventListener("click", () => {
-            terminalInput.focus();
+        // Ensure input is focused when clicking inside the terminal, but avoid annoying mobile keyboard popups on simple taps
+        document.querySelector(".terminal-container").addEventListener("click", (e) => {
+            if (window.innerWidth > 768 || e.target === terminalInput) {
+                terminalInput.focus();
+            }
         });
 
         const commands = {
