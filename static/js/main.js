@@ -428,6 +428,82 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    /* ── My Journey Timeline Animation ──────────────── */
+    const timeline = document.querySelector('.timeline');
+    if (timeline) {
+        const timelineDots = document.querySelectorAll('.timeline-dot');
+
+        function updateTimeline() {
+            const rect = timeline.getBoundingClientRect();
+            // Start animating when top of timeline is 80% down the screen
+            const windowHeight = window.innerHeight;
+
+            // Calculate progress (0 to 1) based on scroll
+            let progress = 0;
+            const startScroll = rect.top - windowHeight * 0.8;
+            const endScroll = rect.bottom - windowHeight * 0.6;
+
+            if (startScroll < 0) {
+                progress = Math.min(1, Math.abs(startScroll) / (endScroll - startScroll + Math.abs(startScroll)));
+            }
+            if (rect.top - windowHeight * 0.8 > 0) progress = 0;
+            if (rect.bottom - windowHeight * 0.6 < 0) progress = 1;
+
+            // Set CSS variable for the ::after progressive line height
+            timeline.style.setProperty('--timeline-progress', `${progress * 100}%`);
+
+            // Light up dots as the line reaches them
+            const timelineLineHeight = progress * timeline.offsetHeight;
+
+            timelineDots.forEach(dot => {
+                // Determine dot relative position within the timeline
+                const dotTop = dot.getBoundingClientRect().top - rect.top;
+                if (timelineLineHeight >= dotTop) {
+                    dot.classList.add('active');
+                } else {
+                    dot.classList.remove('active');
+                }
+            });
+        }
+
+        window.addEventListener('scroll', updateTimeline);
+        updateTimeline(); // Init on load
+    }
+
+    /* ── Advanced 3D Tilt Effect ───────────────────── */
+    const tiltCards = document.querySelectorAll('.tilt-card');
+
+    tiltCards.forEach(card => {
+        card.addEventListener('mousemove', e => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+
+            const maxTilt = 12; // Maximum tilt angle
+
+            // Calculate rotation
+            const rotateX = ((y - centerY) / centerY) * -maxTilt;
+            const rotateY = ((x - centerX) / centerX) * maxTilt;
+
+            card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+
+            // Optional shine effect
+            const shine = card.querySelector('.tilt-shine');
+            if (shine) {
+                shine.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(255,255,255,0.1) 0%, transparent 60%)`;
+            }
+        });
+
+        card.addEventListener('mouseleave', () => {
+            card.style.transform = `perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)`;
+            const shine = card.querySelector('.tilt-shine');
+            if (shine) shine.style.background = 'transparent';
+        });
+    });
+
     /* ── Contact Form ──────────────────────────── */
     const contactForm = document.getElementById("contactForm");
     const toast = document.getElementById("toast");
@@ -480,6 +556,8 @@ document.addEventListener("DOMContentLoaded", () => {
         toast.classList.add("show");
         setTimeout(() => toast.classList.remove("show"), 4000);
     }
+
+
 
     /* ── Back To Top ───────────────────────────── */
     const backToTop = document.getElementById("backToTop");
