@@ -9,7 +9,7 @@ import json
 import requests
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, make_response
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -90,6 +90,46 @@ def _build_description(repo):
     return f"A {lang} project — check it out on GitHub."
 
 
+def _build_case_study(repo, idx):
+    """Build structural case-study breakdown dynamically for a project."""
+    name = repo["name"].lower()
+    
+    # Base defaults
+    problem = "Managing complex tasks and workflows efficiently without automated synchronization triggers."
+    solution = "Implemented a scalable container or backend architecture supporting fast transaction speeds and responsive visual feedback."
+    features = ["Dynamic Event Handling", "State Cache Optimization", "Fully Responsive Rendering", "Modern Security Middleware"]
+    challenges = "Handling network state changes, optimizing layout structures, and caching API interactions to avoid throttling."
+    improvements = ["Add real-time analytics monitoring", "Containerize application with Docker Compose"]
+
+    # Specialised breakdowns for portfolio and common repo patterns
+    if "portfolio" in name:
+        problem = "Static grids or template portfolios do not capture complex developer capabilities or offer custom interactivity."
+        solution = "Designed and built an interactive SaaS/startup style portal featuring a client-side AI Chatbot, local terminal shell simulation, and GitHub activity logs."
+        features = ["Simulated Terminal Console", "Client-side AI assistant", "Github Contribution Grid", "Dynamic theme selector menu"]
+        challenges = "Writing clean, optimized DOM manipulation routines to handle nested keyboard actions without triggering browser defaults."
+        improvements = ["Store user chat threads in a database", "Build dynamic 3D graphic renders for the hero section"]
+    elif "contact" in name or "form" in name:
+        problem = "Basic HTML contact forms are vulnerable to crawler spam, lack backend verification, and leak API keys."
+        solution = "Developed an asynchronous AJAX Form with Flask backend validations and secure environment variable bindings."
+        features = ["AJAX Async Fetch", "Validated Input Sanitation", "Toast Feedback Notifications", "Encrypted Key Injection"]
+        challenges = "Handling network timeouts gracefully and mapping custom CSS animation lifecycles on mobile buttons."
+        improvements = ["Implement Google reCAPTCHA", "Persist user feedback records to SQLite databases"]
+    elif "flask" in name or "web" in name:
+        problem = "Standard web frameworks tend to introduce high boilerplate overhead, slow page speeds, and rigid design systems."
+        solution = "Leveraged the Flask micro-framework with custom Jinja parameters and highly optimized caching rules."
+        features = ["Automatic Caching Cache TTL", "Asset Lazy Loading", "JSON API Endpoints", "SEO Schema Injection"]
+        challenges = "Optimizing image loads and managing concurrent page requests."
+        improvements = ["Deploy to serverless cloud runtimes", "Add comprehensive unit test suites"]
+
+    return {
+        "problem": problem,
+        "solution": solution,
+        "features": features,
+        "challenges": challenges,
+        "improvements": improvements
+    }
+
+
 def fetch_github_projects():
     """
     Fetch ALL public repos from GitHub API.
@@ -147,6 +187,7 @@ def fetch_github_projects():
         if not live.strip():
             live = "#"
 
+        case_study = _build_case_study(repo, idx)
         project = {
             "id": idx + 1,
             "title": _beautify_name(name),
@@ -156,6 +197,7 @@ def fetch_github_projects():
             "image": _pick_image(primary_lang, idx),
             "github": repo["html_url"],
             "live": live,
+            "case_study": case_study,
         }
         projects.append(project)
 
@@ -166,26 +208,58 @@ def fetch_github_projects():
 
 
 SKILLS = {
-    "Languages": [
-        {"name": "Python", "level": 92},
-        {"name": "JavaScript", "level": 85},
-        {"name": "SQL", "level": 80},
-        {"name": "HTML5 & CSS3", "level": 90},
+    "Frontend": [
+        {"name": "HTML5 & CSS3", "level": 92},
+        {"name": "JavaScript (ES6+)", "level": 85},
+        {"name": "Modern CSS & Flexbox", "level": 90},
+        {"name": "Responsive UI Design", "level": 88},
     ],
-    "Frameworks & Libraries": [
-        {"name": "Flask", "level": 88},
-        {"name": "Node.js & Express", "level": 70},
-        {"name": "REST APIs", "level": 85},
+    "Backend": [
+        {"name": "Python & Flask", "level": 94},
+        {"name": "RESTful API Design", "level": 88},
+        {"name": "Node.js & Express", "level": 72},
+        {"name": "JSON Serialization", "level": 85},
     ],
-    "Databases & Tools": [
-        {"name": "SQLite / PostgreSQL", "level": 80},
-        {"name": "Git & GitHub", "level": 88},
-        {"name": "VS Code", "level": 92},
+    "AI & ML": [
+        {"name": "Gemini API integration", "level": 86},
+        {"name": "Prompt Engineering", "level": 90},
+        {"name": "AI Automation Scripts", "level": 88},
+    ],
+    "Databases": [
+        {"name": "PostgreSQL", "level": 82},
+        {"name": "SQLite Schema Design", "level": 90},
+        {"name": "SQL Query Optimization", "level": 80},
+    ],
+    "DevOps & Tools": [
+        {"name": "Git & Version Control", "level": 88},
+        {"name": "GitHub API automation", "level": 85},
+        {"name": "VS Code customization", "level": 92},
     ],
 }
 
 
 # ── Routes ─────────────────────────────────────────────────────
+@app.route("/sitemap.xml")
+def sitemap():
+    """Generate dynamic XML sitemap for SEO crawlers."""
+    try:
+        xml_content = '<?xml version="1.0" encoding="UTF-8"?>\n'
+        xml_content += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+        xml_content += '  <url>\n'
+        xml_content += f'    <loc>{request.url_root}</loc>\n'
+        xml_content += f'    <lastmod>{time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}</lastmod>\n'
+        xml_content += '    <changefreq>weekly</changefreq>\n'
+        xml_content += '    <priority>1.0</priority>\n'
+        xml_content += '  </url>\n'
+        xml_content += '</urlset>'
+        
+        response = make_response(xml_content)
+        response.headers["Content-Type"] = "application/xml"
+        return response
+    except Exception as e:
+        return str(e), 500
+
+
 @app.route("/")
 def index():
     projects, categories = fetch_github_projects()

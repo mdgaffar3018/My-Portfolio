@@ -464,18 +464,18 @@ document.addEventListener("DOMContentLoaded", () => {
             content: `class Developer:
     def __init__(self):
         self.name = "Mohammed Gaffar"
-        self.role = "College Computer Science Student"
+        self.role = "College Student"
         self.location = "India"
-        self.hobbies = ["Algorithms", "Hardware Projects", "Web Architecture"]
+        self.focus = "Full Stack Web Development"
         self.core_stack = ["Python", "Flask", "SQLite", "JavaScript"]
 
     def fetch_status(self):
-        return "Always learning, building backends, and coding daily."
+        return "Always learning, building web applications, and coding daily."
 
 # Instantiate developer details
 gaffar = Developer()
 print(f"{gaffar.name} -- {gaffar.role}")
-print(gaffar.fetch_status())`
+print(f"Focus: {gaffar.focus}")`
         },
         "skills.json": {
             type: "code",
@@ -584,8 +584,8 @@ echo "Status: $AVAILABILITY"`
   clear      - Clear terminal screen
   sudo       - Elevate terminal permissions`,
             whoami: `Mohammed Gaffar
-College Computer Science Student.
-Passionate about writing backends in Python, database mapping, and automation.`,
+College Student.
+Passionate about Full Stack Web Development, Python, Flask, and building smooth interfaces.`,
             skills: `• Python & Flask (Backend automation structures)
 • JavaScript (Interactive DOM states)
 • SQL (SQLite/PostgreSQL schema designs)
@@ -593,8 +593,8 @@ Passionate about writing backends in Python, database mapping, and automation.`,
 • Git and continuous integration workflows`,
             projects: `Synced Repos: Synced directly via GitHub API.
 Inspect the 'Works' section below to view individual repositories!`,
-            education: `Currently enrolled in Computer Science studies.
-Developing automation scripts, web structures, and practical software applications.`,
+            education: `Currently pursuing college Computer Science studies.
+Developing web structures, database components, and full stack applications.`,
             sudo: `System Administrator alert: Access denied. Gaffar's workstation requires full credential bypass.`
         };
 
@@ -774,5 +774,254 @@ Developing automation scripts, web structures, and practical software applicatio
             window.scrollTo({ top: 0, behavior: "smooth" });
         });
     }
+
+    /* ── GitHub Grid Simulator ──────────────────── */
+    const githubGrid = document.getElementById("githubContributionGrid");
+    if (githubGrid) {
+        // Generate calendar columns: 52 weeks * 7 days
+        const totalDays = 52 * 7;
+        let html = "";
+        for (let i = 0; i < totalDays; i++) {
+            // Generate a random contribution level (0 to 4) biased heavily towards 0 and 1
+            const rand = Math.random();
+            let level = 0;
+            if (rand > 0.9) level = 4;
+            else if (rand > 0.78) level = 3;
+            else if (rand > 0.6) level = 2;
+            else if (rand > 0.3) level = 1;
+            
+            html += `<div class="contribution-day level-${level}" title="Contribution: Level ${level}"></div>`;
+        }
+        githubGrid.innerHTML = html;
+    }
+
+    /* ── Skills Circular Rings Animation ────────── */
+    function animateProgressRings(paneId) {
+        const activePane = document.getElementById(paneId);
+        if (!activePane) return;
+        
+        const fills = activePane.querySelectorAll(".progress-ring-fill");
+        fills.forEach(fill => {
+            const percent = parseInt(fill.getAttribute("data-pct"), 10) || 0;
+            const r = parseInt(fill.getAttribute("r"), 10) || 34;
+            const circumference = 2 * Math.PI * r; // ~213.6
+            
+            fill.style.strokeDasharray = `${circumference} ${circumference}`;
+            fill.style.strokeDashoffset = circumference;
+            
+            // Trigger animation frame offset
+            setTimeout(() => {
+                const offset = circumference - (percent / 100) * circumference;
+                fill.style.strokeDashoffset = offset;
+                
+                // Animate text label count up
+                const label = fill.parentElement.parentElement.querySelector(".progress-percentage-label");
+                if (label) {
+                    let current = 0;
+                    const duration = 1000; // 1s
+                    const stepTime = Math.abs(Math.floor(duration / percent));
+                    const timer = setInterval(() => {
+                        current += 1;
+                        label.textContent = current + "%";
+                        if (current >= percent) {
+                            clearInterval(timer);
+                            label.textContent = percent + "%";
+                        }
+                    }, stepTime || 20);
+                }
+            }, 100);
+        });
+    }
+
+    // Initialize animation on first category pane
+    const activeTab = document.querySelector(".tab-btn.active");
+    if (activeTab) {
+        const firstPaneId = activeTab.getAttribute("data-tab-id");
+        animateProgressRings(firstPaneId);
+    }
+
+    // Category switch triggers
+    const tabBtns = document.querySelectorAll(".tab-btn");
+    const skillPanes = document.querySelectorAll(".skills-pane");
+    tabBtns.forEach(btn => {
+        btn.addEventListener("click", () => {
+            tabBtns.forEach(b => b.classList.remove("active"));
+            skillPanes.forEach(p => p.classList.remove("active"));
+            
+            btn.classList.add("active");
+            const targetId = btn.getAttribute("data-tab-id");
+            const pane = document.getElementById(targetId);
+            if (pane) {
+                pane.classList.add("active");
+                animateProgressRings(targetId);
+            }
+        });
+    });
+
+    /* ── Case Study Detail Modal ─────────────────── */
+    const caseModal = document.getElementById("caseStudyModal");
+    const closeCaseBtn = document.getElementById("closeCaseStudyBtn");
+    
+    // Elements in Modal to populate
+    const csTitle = document.getElementById("caseStudyTitle");
+    const csProblem = document.getElementById("caseStudyProblem");
+    const csSolution = document.getElementById("caseStudySolution");
+    const csFeatures = document.getElementById("caseStudyFeatures");
+    const csChallenges = document.getElementById("caseStudyChallenges");
+    const csImprovements = document.getElementById("caseStudyImprovements");
+
+    function openCaseStudy(projId) {
+        if (!window.portfolioProjects) return;
+        const project = window.portfolioProjects.find(p => String(p.id) === String(projId));
+        if (!project || !project.case_study) return;
+
+        const cs = project.case_study;
+        
+        // Populate fields
+        if (csTitle) csTitle.textContent = `${project.title} — Case Study`;
+        if (csProblem) csProblem.textContent = cs.problem;
+        if (csSolution) csSolution.textContent = cs.solution;
+        if (csChallenges) csChallenges.textContent = cs.challenges;
+
+        // Populate Features List
+        if (csFeatures) {
+            csFeatures.innerHTML = "";
+            cs.features.forEach(f => {
+                const li = document.createElement("li");
+                li.textContent = f;
+                csFeatures.appendChild(li);
+            });
+        }
+
+        // Populate Improvements List
+        if (csImprovements) {
+            csImprovements.innerHTML = "";
+            cs.improvements.forEach(imp => {
+                const li = document.createElement("li");
+                li.textContent = imp;
+                csImprovements.appendChild(li);
+            });
+        }
+
+        // Display Modal
+        if (caseModal) caseModal.classList.add("open");
+    }
+
+    if (closeCaseBtn && caseModal) {
+        closeCaseBtn.addEventListener("click", () => {
+            caseModal.classList.remove("open");
+        });
+        caseModal.addEventListener("click", (e) => {
+            if (e.target === caseModal) caseModal.classList.remove("open");
+        });
+    }
+
+    // Attach card clicks
+    document.querySelectorAll(".project-card").forEach(card => {
+        card.addEventListener("click", (e) => {
+            // Avoid triggering on source / live links
+            if (e.target.closest("a")) return;
+            const projId = card.getAttribute("data-id");
+            if (projId) openCaseStudy(projId);
+        });
+    });
+
+    /* ── AI Assistant Chatbot Logic ────────────── */
+    const chatbotWidget = document.getElementById("chatbotWidget");
+    const chatbotToggle = document.getElementById("chatbotToggle");
+    const chatbotClose = document.getElementById("chatbotCloseBtn");
+    const chatbotMessages = document.getElementById("chatbotMessages");
+    const chatbotInput = document.getElementById("chatbotInput");
+    const chatbotSend = document.getElementById("chatbotSendBtn");
+
+    if (chatbotToggle && chatbotWidget) {
+        chatbotToggle.addEventListener("click", () => {
+            chatbotWidget.classList.toggle("open");
+        });
+    }
+
+    if (chatbotClose && chatbotWidget) {
+        chatbotClose.addEventListener("click", () => {
+            chatbotWidget.classList.remove("open");
+        });
+    }
+
+    function appendChatMessage(sender, text) {
+        if (!chatbotMessages) return;
+        const msgDiv = document.createElement("div");
+        msgDiv.className = `chat-msg ${sender}`;
+        msgDiv.textContent = text;
+        chatbotMessages.appendChild(msgDiv);
+        
+        // Auto scroll to bottom
+        chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+    }
+
+    // Local simulated responses dictionary
+    const botReplies = {
+        skills: "Gaffar specializes in Frontend (HTML/CSS/JS), Backend (Python, Flask, Node.js), Databases (SQL/PostgreSQL), and automated scripts integrating the Gemini AI API.",
+        contract: "Yes! Gaffar is open to contract, freelance, or collaboration work on backend systems, form syncs, database design, and lightweight Flask apps.",
+        building: "Gaffar is currently building a modular SaaS core dashboard template and working with automated API synchronization tools.",
+        contact: "You can reach Gaffar directly via email at gaffarofficial3018@gmail.com, or check out his source code on GitHub (mdgaffar3018).",
+        experience: "As a college student, Gaffar is focused on full stack development. He has built various web portals, form validation pipelines, and API integrations.",
+        github: "He has multiple repositories showcasing automation scripts, caching routines, Flask templates, and responsive dashboard mockups.",
+        default: "That's an interesting question! For detailed inquiries or contract queries, please write to gaffarofficial3018@gmail.com directly."
+    };
+
+    function processBotQuery(userQuery) {
+        const query = userQuery.toLowerCase().trim();
+        let reply = botReplies.default;
+
+        if (query.includes("skill") || query.includes("tech") || query.includes("language")) {
+            reply = botReplies.skills;
+        } else if (query.includes("work") || query.includes("contract") || query.includes("hire") || query.includes("job")) {
+            reply = botReplies.contract;
+        } else if (query.includes("build") || query.includes("current") || query.includes("make")) {
+            reply = botReplies.building;
+        } else if (query.includes("contact") || query.includes("email") || query.includes("reach") || query.includes("talk")) {
+            reply = botReplies.contact;
+        } else if (query.includes("experience") || query.includes("student") || query.includes("college")) {
+            reply = botReplies.experience;
+        } else if (query.includes("github") || query.includes("repo") || query.includes("code")) {
+            reply = botReplies.github;
+        }
+
+        // Simulate chatbot typing delay
+        appendChatMessage("bot", "Typing...");
+        setTimeout(() => {
+            // Remove typing placeholder
+            const typingMsg = chatbotMessages.querySelector(".chat-msg.bot:last-child");
+            if (typingMsg && typingMsg.textContent === "Typing...") {
+                typingMsg.remove();
+            }
+            appendChatMessage("bot", reply);
+        }, 800);
+    }
+
+    function handleChatbotSubmit() {
+        if (!chatbotInput) return;
+        const val = chatbotInput.value.trim();
+        if (!val) return;
+        
+        appendChatMessage("user", val);
+        chatbotInput.value = "";
+        processBotQuery(val);
+    }
+
+    if (chatbotSend && chatbotInput) {
+        chatbotSend.addEventListener("click", handleChatbotSubmit);
+        chatbotInput.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") handleChatbotSubmit();
+        });
+    }
+
+    // Attach suggestions triggers
+    document.querySelectorAll(".suggest-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+            const question = btn.getAttribute("data-question");
+            appendChatMessage("user", question);
+            processBotQuery(question);
+        });
+    });
 
 });
