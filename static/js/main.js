@@ -1,30 +1,56 @@
 /* ═══════════════════════════════════════════════════
    ADVANCED PORTFOLIO — MAIN JAVASCRIPT
-   Particle canvas, typing, scroll-reveal, counters,
-   project filter, carousel, navbar, contact form,
-   scroll progress, 3D tilt, magnetic buttons, text scramble
+   Dynamic theme engine, Command palette, Mock IDE, Tabbed SVG skills, etc.
    ═══════════════════════════════════════════════════ */
 
 document.addEventListener("DOMContentLoaded", () => {
 
-    /* ── Preloader ──────────────────────────────── */
+    /* ── Theme Engine ───────────────────────────── */
+    const themeDropdownBtn = document.getElementById("themeDropdownBtn");
+    const themeMenu = document.getElementById("themeMenu");
+    const currentTheme = localStorage.getItem("portfolio-theme") || "midnight-gold";
+
+    // Set initial theme
+    document.documentElement.setAttribute("data-theme", currentTheme);
+
+    // Toggle theme menu
+    if (themeDropdownBtn && themeMenu) {
+        themeDropdownBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            themeMenu.classList.toggle("active");
+        });
+        document.addEventListener("click", () => {
+            themeMenu.classList.remove("active");
+        });
+    }
+
+    // Set theme on click
+    document.querySelectorAll("[data-set-theme]").forEach(item => {
+        item.addEventListener("click", (e) => {
+            const theme = e.currentTarget.getAttribute("data-set-theme");
+            document.documentElement.setAttribute("data-theme", theme);
+            localStorage.setItem("portfolio-theme", theme);
+            showToast(`Theme switched to ${e.currentTarget.textContent.trim()}`, false);
+        });
+    });
+
+    /* ── Preloader & Scroll Progress ───────────── */
     const preloader = document.getElementById("preloader");
     window.addEventListener("load", () => {
-        setTimeout(() => preloader.classList.add("hidden"), 600);
+        setTimeout(() => { if (preloader) preloader.classList.add("hidden"); }, 600);
     });
-    setTimeout(() => preloader.classList.add("hidden"), 3000);
+    setTimeout(() => { if (preloader) preloader.classList.add("hidden"); }, 3000);
 
-    /* ── Scroll Progress Bar ───────────────────── */
     const scrollProgress = document.getElementById("scrollProgress");
     function updateScrollProgress() {
         const scrollTop = window.scrollY;
         const docHeight = document.documentElement.scrollHeight - window.innerHeight;
         const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
-        scrollProgress.style.width = progress + "%";
+        if (scrollProgress) scrollProgress.style.width = progress + "%";
     }
     window.addEventListener("scroll", updateScrollProgress);
 
-    /* ── Particle Canvas ───────────────────────── */
+    /* ── Interactive Particle Canvas ───────────── */
     const canvas = document.getElementById("particleCanvas");
     if (canvas) {
         const ctx = canvas.getContext("2d");
@@ -38,7 +64,6 @@ document.addEventListener("DOMContentLoaded", () => {
         resizeCanvas();
         window.addEventListener("resize", resizeCanvas);
 
-        // Track mouse for interactive particles
         canvas.parentElement.addEventListener("mousemove", (e) => {
             const rect = canvas.getBoundingClientRect();
             mouseX = e.clientX - rect.left;
@@ -54,56 +79,57 @@ document.addEventListener("DOMContentLoaded", () => {
             reset() {
                 this.x = Math.random() * canvas.width;
                 this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 2 + 0.5;
+                this.size = Math.random() * 2 + 0.6;
                 this.baseSpeedX = (Math.random() - 0.5) * 0.4;
                 this.baseSpeedY = (Math.random() - 0.5) * 0.4;
                 this.speedX = this.baseSpeedX;
                 this.speedY = this.baseSpeedY;
-                this.opacity = Math.random() * 0.5 + 0.1;
+                this.opacity = Math.random() * 0.4 + 0.15;
             }
             update() {
-                // Mouse interaction - particles get pushed away
                 const dx = this.x - mouseX;
                 const dy = this.y - mouseY;
                 const dist = Math.sqrt(dx * dx + dy * dy);
-                if (dist < 100) {
-                    const force = (100 - dist) / 100;
-                    this.speedX = this.baseSpeedX + (dx / dist) * force * 2;
-                    this.speedY = this.baseSpeedY + (dy / dist) * force * 2;
+                if (dist < 120) {
+                    const force = (120 - dist) / 120;
+                    this.speedX = this.baseSpeedX + (dx / dist) * force * 1.5;
+                    this.speedY = this.baseSpeedY + (dy / dist) * force * 1.5;
                 } else {
                     this.speedX += (this.baseSpeedX - this.speedX) * 0.05;
                     this.speedY += (this.baseSpeedY - this.speedY) * 0.05;
                 }
-
                 this.x += this.speedX;
                 this.y += this.speedY;
+
                 if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
                 if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
             }
             draw() {
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(212, 162, 58, ${this.opacity})`;
+                const accentColor = getComputedStyle(document.documentElement).getPropertyValue('--accent-primary').trim();
+                ctx.fillStyle = accentColor ? `${accentColor}cc` : `rgba(212, 162, 58, ${this.opacity})`;
                 ctx.fill();
             }
         }
 
         function initParticles() {
-            const count = Math.min(Math.floor((canvas.width * canvas.height) / 8000), 120);
+            const count = Math.min(Math.floor((canvas.width * canvas.height) / 9000), 100);
             particles = Array.from({ length: count }, () => new Particle());
         }
         initParticles();
 
         function connectParticles() {
+            const accentSec = getComputedStyle(document.documentElement).getPropertyValue('--accent-secondary').trim();
             for (let i = 0; i < particles.length; i++) {
                 for (let j = i + 1; j < particles.length; j++) {
                     const dx = particles[i].x - particles[j].x;
                     const dy = particles[i].y - particles[j].y;
                     const dist = Math.sqrt(dx * dx + dy * dy);
-                    if (dist < 120) {
-                        const opacity = (1 - dist / 120) * 0.15;
+                    if (dist < 130) {
+                        const opacity = (1 - dist / 130) * 0.12;
                         ctx.beginPath();
-                        ctx.strokeStyle = `rgba(232, 168, 124, ${opacity})`;
+                        ctx.strokeStyle = accentSec ? `${accentSec}1e` : `rgba(232, 168, 124, ${opacity})`;
                         ctx.lineWidth = 0.6;
                         ctx.moveTo(particles[i].x, particles[i].y);
                         ctx.lineTo(particles[j].x, particles[j].y);
@@ -126,11 +152,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const typedEl = document.getElementById("typedText");
     if (typedEl) {
         const words = [
-            "build things with code.",
-            "love Python.",
-            "create web apps.",
-            "solve problems creatively.",
-            "learn new tech daily."
+            "build robust backends.",
+            "engineer with Python.",
+            "design smooth interfaces.",
+            "build full-stack Flask apps.",
+            "optimize SQL database logic."
         ];
         let wordIdx = 0, charIdx = 0, deleting = false;
 
@@ -144,28 +170,28 @@ document.addEventListener("DOMContentLoaded", () => {
                 charIdx++;
             }
 
-            let delay = deleting ? 40 : 80;
+            let delay = deleting ? 30 : 60;
             if (!deleting && charIdx === current.length) {
-                delay = 2000;
+                delay = 2200;
                 deleting = true;
             } else if (deleting && charIdx === 0) {
                 deleting = false;
                 wordIdx = (wordIdx + 1) % words.length;
-                delay = 400;
+                delay = 300;
             }
             setTimeout(type, delay);
         }
         type();
     }
 
-    /* ── Navbar ─────────────────────────────────── */
+    /* ── Navbar Burger Menu Toggle ─────────────── */
     const navbar = document.getElementById("navbar");
     const navToggle = document.getElementById("navToggle");
     const navMenu = document.getElementById("navMenu");
     const navLinks = document.querySelectorAll(".nav-link");
 
     window.addEventListener("scroll", () => {
-        navbar.classList.toggle("scrolled", window.scrollY > 60);
+        if (navbar) navbar.classList.toggle("scrolled", window.scrollY > 40);
     });
 
     if (navToggle && navMenu) {
@@ -181,21 +207,10 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    /* ── Smooth Scrolling with Parallax ─────────── */
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener("click", function (e) {
-            e.preventDefault();
-            const target = document.querySelector(this.getAttribute("href"));
-            if (target) {
-                target.scrollIntoView({ behavior: "smooth", block: "start" });
-            }
-        });
-    });
-
-    /* ── Scroll Spy ────────────────────────────── */
+    // Scroll Spy navigation active state sync
     const sections = document.querySelectorAll("section[id]");
     function scrollSpy() {
-        const scrollY = window.scrollY + 200;
+        const scrollY = window.scrollY + 150;
         sections.forEach(sec => {
             const top = sec.offsetTop;
             const height = sec.offsetHeight;
@@ -208,7 +223,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     window.addEventListener("scroll", scrollSpy);
 
-    /* ── Scroll Reveal (with Stagger) ──────────── */
+    /* ── Scroll Reveal Trigger ──────────────────── */
     const revealObserver = new IntersectionObserver(
         (entries) => {
             entries.forEach(entry => {
@@ -217,265 +232,379 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             });
         },
-        { threshold: 0.15, rootMargin: "0px 0px -50px 0px" }
+        { threshold: 0.1, rootMargin: "0px 0px -40px 0px" }
     );
     document.querySelectorAll(".reveal").forEach(el => revealObserver.observe(el));
 
-    // Add stagger class to grid containers automatically
-    document.querySelectorAll(".skills-grid, .projects-grid").forEach(grid => {
-        grid.classList.add("reveal-stagger");
-    });
-
-    /* ── Animated Counters ─────────────────────── */
+    // Stagger counters
     const counterObserver = new IntersectionObserver(
         (entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     const el = entry.target;
                     const target = parseInt(el.getAttribute("data-target"), 10);
-                    animateCounter(el, target);
+                    let current = 0;
+                    const step = Math.max(1, Math.floor(target / 40));
+                    const timer = setInterval(() => {
+                        current += step;
+                        if (current >= target) { current = target; clearInterval(timer); }
+                        el.textContent = current;
+                    }, 35);
                     counterObserver.unobserve(el);
                 }
             });
         },
         { threshold: 0.5 }
     );
-    document.querySelectorAll(".stat-number[data-target]").forEach(el =>
-        counterObserver.observe(el)
-    );
+    document.querySelectorAll(".stat-number[data-target]").forEach(el => counterObserver.observe(el));
 
-    function animateCounter(el, target) {
-        let current = 0;
-        const step = Math.max(1, Math.floor(target / 60));
-        const timer = setInterval(() => {
-            current += step;
-            if (current >= target) { current = target; clearInterval(timer); }
-            el.textContent = current;
-        }, 30);
+
+    /* ── Circular SVG Skills Loader ────────────── */
+    function animateRadialSkills(container) {
+        const fillElements = container.querySelectorAll(".progress-ring-fill");
+        fillElements.forEach(fill => {
+            const pct = parseInt(fill.getAttribute("data-pct"), 10);
+            const radius = fill.r.baseVal.value;
+            const circumference = 2 * Math.PI * radius;
+            
+            // Set transitions and offsets
+            fill.style.strokeDasharray = `${circumference} ${circumference}`;
+            fill.style.strokeDashoffset = circumference;
+            
+            // Animate label
+            const label = fill.parentElement.parentElement.querySelector(".progress-percentage-label");
+            let count = 0;
+            const interval = setInterval(() => {
+                count += Math.ceil(pct / 30);
+                if (count >= pct) {
+                    count = pct;
+                    clearInterval(interval);
+                }
+                if (label) label.textContent = `${count}%`;
+            }, 30);
+
+            setTimeout(() => {
+                const offset = circumference - (pct / 100) * circumference;
+                fill.style.strokeDashoffset = offset;
+            }, 100);
+        });
     }
 
-    /* ── Skill Bar Animation ───────────────────── */
-    const skillObserver = new IntersectionObserver(
+    // Trigger skills on view
+    const skillsObserver = new IntersectionObserver(
         (entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    const fill = entry.target;
-                    fill.style.width = fill.getAttribute("data-width") + "%";
-                    skillObserver.unobserve(fill);
+                    animateRadialSkills(entry.target);
+                    skillsObserver.unobserve(entry.target);
                 }
             });
         },
-        { threshold: 0.3 }
+        { threshold: 0.2 }
     );
-    document.querySelectorAll(".skill-fill").forEach(el => skillObserver.observe(el));
+    const activePane = document.querySelector(".skills-pane.active");
+    if (activePane) skillsObserver.observe(activePane);
 
-    /* ── Project Filters ───────────────────────── */
-    const filterBtns = document.querySelectorAll(".filter-btn");
-    const projectCards = document.querySelectorAll(".project-card");
+    /* ── Technical Skills Tabs ─────────────────── */
+    const tabButtons = document.querySelectorAll(".tab-btn");
+    const skillPanes = document.querySelectorAll(".skills-pane");
 
-    filterBtns.forEach(btn => {
+    tabButtons.forEach(btn => {
         btn.addEventListener("click", () => {
-            filterBtns.forEach(b => b.classList.remove("active"));
+            tabButtons.forEach(b => b.classList.remove("active"));
             btn.classList.add("active");
 
-            const filter = btn.getAttribute("data-filter");
-            projectCards.forEach((card, idx) => {
-                const cat = card.getAttribute("data-category");
-                if (filter === "all" || cat === filter) {
-                    card.classList.remove("hidden");
-                    card.style.animation = `fadeInUp 0.5s var(--ease) ${idx * 0.08}s both`;
-                } else {
-                    card.classList.add("hidden");
+            const tabId = btn.getAttribute("data-tab-id");
+            skillPanes.forEach(pane => {
+                pane.classList.remove("active");
+                if (pane.getAttribute("id") === tabId) {
+                    pane.classList.add("active");
+                    // Animate SVG meters inside this active tab
+                    animateRadialSkills(pane);
                 }
             });
         });
     });
 
-    /* ── 3D Tilt Effect on Cards ───────────────── */
-    document.querySelectorAll(".project-card, .skill-category, .timeline-card").forEach(card => {
-        card.addEventListener("mousemove", (e) => {
-            const rect = card.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            const centerX = rect.width / 2;
-            const centerY = rect.height / 2;
-            const rotateX = ((y - centerY) / centerY) * -6;
-            const rotateY = ((x - centerX) / centerX) * 6;
-            card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-4px)`;
-        });
-        card.addEventListener("mouseleave", () => {
-            card.style.transform = "perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0)";
-        });
-    });
+    /* ── Command Palette (Ctrl+K) ──────────────── */
+    const cmdPalette = document.getElementById("cmdPalette");
+    const cmdPaletteBtn = document.getElementById("cmdPaletteBtn");
+    const cmdSearchInput = document.getElementById("cmdSearchInput");
+    const cmdResults = document.getElementById("cmdResults");
 
-    /* ── Magnetic Button Effect ─────────────────── */
-    document.querySelectorAll(".btn, .nav-cta, .social-link, .filter-btn").forEach(btn => {
-        btn.addEventListener("mousemove", (e) => {
-            const rect = btn.getBoundingClientRect();
-            const x = e.clientX - rect.left - rect.width / 2;
-            const y = e.clientY - rect.top - rect.height / 2;
-            btn.style.transform = `translate(${x * 0.2}px, ${y * 0.2}px)`;
-        });
-        btn.addEventListener("mouseleave", () => {
-            btn.style.transform = "translate(0, 0)";
-        });
-    });
-
-    /* ── Text Scramble Effect on Section Tags ──── */
-    const chars = "!<>-_\\/[]{}—=+*^?#_ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    function scrambleText(el) {
-        const original = el.textContent;
-        let iteration = 0;
-        const interval = setInterval(() => {
-            el.textContent = original
-                .split("")
-                .map((char, index) => {
-                    if (index < iteration) return original[index];
-                    return chars[Math.floor(Math.random() * chars.length)];
-                })
-                .join("");
-            iteration += 1 / 2;
-            if (iteration >= original.length) {
-                clearInterval(interval);
-                el.textContent = original;
-            }
-        }, 30);
+    function togglePalette() {
+        if (!cmdPalette) return;
+        cmdPalette.classList.toggle("active");
+        if (cmdPalette.classList.contains("active")) {
+            setTimeout(() => cmdSearchInput.focus(), 150);
+            cmdSearchInput.value = "";
+            filterPaletteItems("");
+        }
     }
 
-    const scrambleObserver = new IntersectionObserver(
-        (entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    scrambleText(entry.target);
-                    scrambleObserver.unobserve(entry.target);
+    if (cmdPaletteBtn) cmdPaletteBtn.addEventListener("click", togglePalette);
+
+    // Keyboard Shortcuts
+    document.addEventListener("keydown", (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+            e.preventDefault();
+            togglePalette();
+        }
+        if (e.key === "Escape" && cmdPalette && cmdPalette.classList.contains("active")) {
+            togglePalette();
+        }
+    });
+
+    if (cmdPalette) {
+        cmdPalette.addEventListener("click", (e) => {
+            if (e.target === cmdPalette) togglePalette();
+        });
+    }
+
+    // Filter Command Items
+    if (cmdSearchInput) {
+        cmdSearchInput.addEventListener("input", (e) => {
+            filterPaletteItems(e.target.value.toLowerCase().trim());
+        });
+    }
+
+    function filterPaletteItems(query) {
+        const items = document.querySelectorAll(".cmd-item");
+        items.forEach(item => {
+            const text = item.textContent.toLowerCase();
+            if (text.includes(query)) {
+                item.style.display = "flex";
+            } else {
+                item.style.display = "none";
+            }
+        });
+
+        // Set first matching element as active
+        const visibleItems = document.querySelectorAll(".cmd-item[style='display: flex;']");
+        items.forEach(it => it.classList.remove("active"));
+        if (visibleItems.length > 0) {
+            visibleItems[0].classList.add("active");
+        }
+    }
+
+    // Trigger action when clicking a command palette item
+    document.querySelectorAll(".cmd-item").forEach(item => {
+        item.addEventListener("click", () => {
+            triggerCommand(item);
+        });
+    });
+
+    // Keyboard nav inside palette
+    if (cmdSearchInput) {
+        cmdSearchInput.addEventListener("keydown", (e) => {
+            const items = Array.from(document.querySelectorAll(".cmd-item[style='display: flex;']"));
+            if (items.length === 0) return;
+
+            let activeIdx = items.findIndex(it => it.classList.contains("active"));
+
+            if (e.key === "ArrowDown") {
+                e.preventDefault();
+                items.forEach(it => it.classList.remove("active"));
+                activeIdx = (activeIdx + 1) % items.length;
+                items[activeIdx].classList.add("active");
+            } else if (e.key === "ArrowUp") {
+                e.preventDefault();
+                items.forEach(it => it.classList.remove("active"));
+                activeIdx = (activeIdx - 1 + items.length) % items.length;
+                items[activeIdx].classList.add("active");
+            } else if (e.key === "Enter") {
+                e.preventDefault();
+                if (activeIdx >= 0) {
+                    triggerCommand(items[activeIdx]);
                 }
-            });
+            }
+        });
+    }
+
+    function triggerCommand(item) {
+        const action = item.getAttribute("data-action");
+        const target = item.getAttribute("data-target");
+
+        togglePalette(); // close palette
+
+        if (action === "nav") {
+            const targetEl = document.querySelector(target);
+            if (targetEl) {
+                targetEl.scrollIntoView({ behavior: "smooth", block: "start" });
+            }
+        } else if (action === "theme") {
+            document.documentElement.setAttribute("data-theme", target);
+            localStorage.setItem("portfolio-theme", target);
+            const themeLabel = item.querySelector("span").textContent;
+            showToast(`Theme switched to ${themeLabel}`, false);
+        } else if (action === "exec") {
+            if (target === "copy-email") {
+                navigator.clipboard.writeText("gaffarofficial3018@gmail.com")
+                    .then(() => showToast("Email copied to clipboard!", false))
+                    .catch(() => showToast("Failed to copy email.", true));
+            } else if (target === "github-profile") {
+                window.open("https://github.com/mdgaffar3018", "_blank");
+            }
+        }
+    }
+
+
+    /* ── Mock IDE File Explorer ────────────────── */
+    const treeFiles = document.querySelectorAll(".tree-file");
+    const editorTabs = document.getElementById("editorTabs");
+    const paneTerminal = document.getElementById("pane-terminal-sh");
+    const paneCodeViewer = document.getElementById("pane-code-viewer");
+    const codeContentEl = document.getElementById("codeViewerContent");
+
+    const mockFiles = {
+        "terminal.sh": { type: "terminal" },
+        "about.py": {
+            type: "code",
+            lang: "python",
+            content: `class Developer:
+    def __init__(self):
+        self.name = "Mohammed Gaffar"
+        self.role = "College Computer Science Student"
+        self.location = "India"
+        self.hobbies = ["Algorithms", "Hardware Projects", "Web Architecture"]
+        self.core_stack = ["Python", "Flask", "SQLite", "JavaScript"]
+
+    def fetch_status(self):
+        return "Always learning, building backends, and coding daily."
+
+# Instantiate developer details
+gaffar = Developer()
+print(f"{gaffar.name} -- {gaffar.role}")
+print(gaffar.fetch_status())`
         },
-        { threshold: 0.5 }
-    );
-    document.querySelectorAll(".section-tag").forEach(el => scrambleObserver.observe(el));
+        "skills.json": {
+            type: "code",
+            lang: "json",
+            content: `{
+  "languages": {
+    "python": "Expert (Backend & Automation)",
+    "javascript": "Intermediate (Dom Manipulation & Scripts)",
+    "sql": "Intermediate (DB Schema Architecture)",
+    "html_css": "Advanced (Responsive Layouts)"
+  },
+  "frameworks": {
+    "flask": "Proficient",
+    "nodejs": "Familiar"
+  },
+  "databases_and_tools": [
+    "PostgreSQL",
+    "SQLite",
+    "Git",
+    "GitHub Sync Engine",
+    "VS Code"
+  ]
+}`
+        },
+        "contact.sh": {
+            type: "code",
+            lang: "bash",
+            content: `#!/bin/bash
 
-    /* ── Parallax on Scroll ────────────────────── */
-    function parallax() {
-        const scrollY = window.scrollY;
-        const heroContent = document.querySelector(".hero-content");
-        if (heroContent) {
-            heroContent.style.transform = `translateY(${scrollY * 0.3}px)`;
-            heroContent.style.opacity = 1 - scrollY / 800;
+# Contact Details for Mohammed Gaffar
+EMAIL="gaffarofficial3018@gmail.com"
+GITHUB="https://github.com/mdgaffar3018"
+AVAILABILITY="Open to open-source contributions & web backend contracts."
+
+echo "Get in touch at: $EMAIL"
+echo "Check portfolio source code at: $GITHUB"
+echo "Status: $AVAILABILITY"`
         }
-        // Aurora parallax
-        document.querySelectorAll(".aurora-blob").forEach((blob, i) => {
-            const speed = 0.05 + i * 0.02;
-            blob.style.transform = `translateY(${scrollY * speed}px)`;
-        });
-    }
-    window.addEventListener("scroll", parallax);
+    };
 
-    /* ── Testimonial Carousel ──────────────────── */
-    const track = document.getElementById("carouselTrack");
-    const prevBtn = document.getElementById("carouselPrev");
-    const nextBtn = document.getElementById("carouselNext");
-    const dotsContainer = document.getElementById("carouselDots");
-
-    if (track) {
-        const slides = track.querySelectorAll(".testimonial-card");
-        let currentSlide = 0;
-
-        slides.forEach((_, i) => {
-            const dot = document.createElement("div");
-            dot.classList.add("dot");
-            if (i === 0) dot.classList.add("active");
-            dot.addEventListener("click", () => goToSlide(i));
-            dotsContainer.appendChild(dot);
+    // Load selected file in editor mock
+    function loadIDEFile(filename) {
+        // Toggle file tree active styling
+        treeFiles.forEach(file => {
+            file.classList.toggle("active", file.getAttribute("data-file") === filename);
         });
 
-        function goToSlide(idx) {
-            currentSlide = idx;
-            track.style.transform = `translateX(-${idx * 100}%)`;
-            dotsContainer.querySelectorAll(".dot").forEach((d, i) => {
-                d.classList.toggle("active", i === idx);
-            });
+        // Set Tab UI
+        if (editorTabs) {
+            let tabIcon = "fa-terminal";
+            if (filename.endsWith(".py")) tabIcon = "fa-python text-python";
+            else if (filename.endsWith(".json")) tabIcon = "fa-brackets-curly text-json";
+            else if (filename.endsWith(".sh") && filename !== "terminal.sh") tabIcon = "fa-file-code text-sh";
+
+            editorTabs.innerHTML = `
+                <div class="ide-tab active" data-file="${filename}">
+                    <i class="fas ${tabIcon}"></i>
+                    <span>${filename}</span>
+                </div>
+            `;
         }
 
-        prevBtn.addEventListener("click", () => {
-            goToSlide((currentSlide - 1 + slides.length) % slides.length);
-        });
-        nextBtn.addEventListener("click", () => {
-            goToSlide((currentSlide + 1) % slides.length);
-        });
-
-        let autoPlay = setInterval(() => {
-            goToSlide((currentSlide + 1) % slides.length);
-        }, 5000);
-
-        track.parentElement.addEventListener("mouseenter", () => clearInterval(autoPlay));
-        track.parentElement.addEventListener("mouseleave", () => {
-            autoPlay = setInterval(() => {
-                goToSlide((currentSlide + 1) % slides.length);
-            }, 5000);
-        });
-
-        // Swipe support for mobile
-        let touchStart = 0;
-        track.addEventListener("touchstart", (e) => { touchStart = e.touches[0].clientX; });
-        track.addEventListener("touchend", (e) => {
-            const diff = touchStart - e.changedTouches[0].clientX;
-            if (Math.abs(diff) > 50) {
-                diff > 0
-                    ? goToSlide((currentSlide + 1) % slides.length)
-                    : goToSlide((currentSlide - 1 + slides.length) % slides.length);
+        // Toggle Panes
+        const fileData = mockFiles[filename];
+        if (fileData) {
+            if (fileData.type === "terminal") {
+                paneCodeViewer.classList.remove("active");
+                paneTerminal.classList.add("active");
+            } else {
+                paneTerminal.classList.remove("active");
+                paneCodeViewer.classList.add("active");
+                if (codeContentEl) {
+                    codeContentEl.textContent = fileData.content;
+                }
             }
-        });
+        }
     }
 
-    /* ── Terminal Easter Egg ───────────────────────── */
+    treeFiles.forEach(file => {
+        file.addEventListener("click", () => {
+            loadIDEFile(file.getAttribute("data-file"));
+        });
+    });
+
+
+    /* ── Terminal Commands Shell ────────────────── */
     const terminalInput = document.getElementById("terminalInput");
     const terminalBody = document.getElementById("terminalBody");
 
     if (terminalInput && terminalBody) {
-        // Ensure input is focused when clicking inside the terminal, but avoid annoying mobile keyboard popups on simple taps
-        document.querySelector(".terminal-container").addEventListener("click", (e) => {
+        // Force input focus on terminal click
+        document.querySelector(".ide-editor-body").addEventListener("click", (e) => {
             if (window.innerWidth > 768 || e.target === terminalInput) {
                 terminalInput.focus();
             }
         });
 
-        const commands = {
+        const shellCommands = {
             help: `Available commands:
-  help       - Show this help message
-  whoami     - Display owner information
-  skills     - List technical skills
-  projects   - Show project statistics
-  education  - Display education history
-  contact    - Show contact information
+  help       - Display list of workspace options
+  whoami     - Learn more about the workspace author
+  skills     - View programming competency categories
+  projects   - Show overall stats of synced projects
+  education  - Print educational progress summary
+  cat <file> - Concatenate and display mock file (e.g. cat about.py)
   clear      - Clear terminal screen
-  sudo       - ?????`,
+  sudo       - Elevate terminal permissions`,
             whoami: `Mohammed Gaffar
-Class 12 Computer Science Student.
-Passionate about Python, Backend Development, and Problem Solving.`,
-            skills: `• Python (Flask, Automation)
-• HTML5 & CSS3 (UI/UX)
-• JavaScript (Interactivity)
-• SQL (Database Management)
-• Git & GitHub`,
-            projects: `Total projects shipped: {{ project_count }}
-Check the 'Works' section for details.`,
-            education: `Currently pursuing Class 12 Computer Science.
-Focusing on software development and building real-world applications.`,
-            contact: `Email: gaffarofficial3018@gmail.com
-GitHub: github.com/mdgaffar3018
-Location: India`,
-            sudo: `nice try. you do not have root privileges here.`
+College Computer Science Student.
+Passionate about writing backends in Python, database mapping, and automation.`,
+            skills: `• Python & Flask (Backend automation structures)
+• JavaScript (Interactive DOM states)
+• SQL (SQLite/PostgreSQL schema designs)
+• HTML5 & CSS3 stylesheets
+• Git and continuous integration workflows`,
+            projects: `Synced Repos: Synced directly via GitHub API.
+Inspect the 'Works' section below to view individual repositories!`,
+            education: `Currently enrolled in Computer Science studies.
+Developing automation scripts, web structures, and practical software applications.`,
+            sudo: `System Administrator alert: Access denied. Gaffar's workstation requires full credential bypass.`
         };
 
-        const commandList = Object.keys(commands);
+        const commandList = ["help", "whoami", "skills", "projects", "education", "clear", "sudo", "cat"];
         let commandHistory = [];
         let historyIndex = -1;
 
         function printToTerminal(text, isError = false) {
             const div = document.createElement("div");
             div.className = "terminal-output" + (isError ? " error" : "");
-            // Basic HTML escaping
             div.innerHTML = text.replace(/</g, "&lt;").replace(/>/g, "&gt;");
             terminalBody.insertBefore(div, terminalInput.parentElement);
         }
@@ -487,46 +616,8 @@ Location: India`,
             terminalBody.insertBefore(div, terminalInput.parentElement);
         }
 
-        // Terminal Typewriter Effect for welcome message
-        const welcomeLines = terminalBody.querySelectorAll(".terminal-line");
-        if (welcomeLines.length >= 2) {
-            const line1 = welcomeLines[0];
-            const line2 = welcomeLines[1];
-            const text1 = line1.textContent;
-            const text2 = line2.textContent;
-            line1.textContent = "";
-            line2.textContent = "";
-
-            let i = 0;
-            function typeOut1() {
-                if (i < text1.length) {
-                    line1.textContent += text1.charAt(i);
-                    i++;
-                    setTimeout(typeOut1, 30);
-                } else {
-                    i = 0;
-                    setTimeout(typeOut2, 100);
-                }
-            }
-            function typeOut2() {
-                if (i < text2.length) {
-                    line2.textContent += text2.charAt(i);
-                    i++;
-                    setTimeout(typeOut2, 30);
-                }
-            }
-            // Add a small delay so user can scroll down and see it type
-            const terminalObserver = new IntersectionObserver((entries) => {
-                if (entries[0].isIntersecting) {
-                    typeOut1();
-                    terminalObserver.disconnect();
-                }
-            }, { threshold: 0.5 });
-            terminalObserver.observe(document.querySelector(".terminal-section"));
-        }
-
         terminalInput.addEventListener("keydown", function (e) {
-            // Command History Navigation
+            // Up/Down Arrows
             if (e.key === "ArrowUp") {
                 e.preventDefault();
                 if (commandHistory.length > 0 && historyIndex < commandHistory.length - 1) {
@@ -543,7 +634,7 @@ Location: India`,
                     this.value = "";
                 }
             }
-            // Auto-complete
+            // Tab Complete
             else if (e.key === "Tab") {
                 e.preventDefault();
                 const currentVal = this.value.trim().toLowerCase();
@@ -552,18 +643,20 @@ Location: India`,
                     this.value = match;
                 }
             }
-            // Execute Command
+            // Execute
             else if (e.key === "Enter") {
-                const cmd = this.value.trim().toLowerCase();
+                const fullCmd = this.value.trim();
+                const cmdParts = fullCmd.toLowerCase().split(" ");
+                const cmd = cmdParts[0];
+                const arg = cmdParts[1];
+                
                 this.value = "";
+                if (fullCmd === "") return;
 
-                if (cmd === "") return;
-
-                // Add to history
-                commandHistory.push(cmd);
+                commandHistory.push(fullCmd);
                 historyIndex = -1;
 
-                createPromptLine(cmd);
+                createPromptLine(fullCmd);
 
                 if (cmd === "clear") {
                     const children = Array.from(terminalBody.children);
@@ -572,10 +665,22 @@ Location: India`,
                             child.remove();
                         }
                     });
-                } else if (commands[cmd]) {
-                    printToTerminal(commands[cmd]);
+                } else if (cmd === "cat") {
+                    if (!arg) {
+                        printToTerminal("Usage: cat <filename> (e.g. cat about.py)", true);
+                    } else if (mockFiles[arg]) {
+                        if (arg === "terminal.sh") {
+                            printToTerminal("Cannot cat an active terminal stream.", true);
+                        } else {
+                            printToTerminal(mockFiles[arg].content);
+                        }
+                    } else {
+                        printToTerminal(`cat: ${arg}: No such file or directory. Try: about.py, skills.json, contact.sh`, true);
+                    }
+                } else if (shellCommands[cmd]) {
+                    printToTerminal(shellCommands[cmd]);
                 } else {
-                    printToTerminal(`Command not found: ${cmd}. Type 'help' for a list of commands.`, true);
+                    printToTerminal(`Command not recognized: '${cmd}'. Enter 'help' for instructions.`, true);
                 }
 
                 terminalBody.scrollTop = terminalBody.scrollHeight;
@@ -583,7 +688,29 @@ Location: India`,
         });
     }
 
-    /* ── Contact Form ──────────────────────────── */
+    /* ── Project Sorting Filters ───────────────── */
+    const filterBtns = document.querySelectorAll(".filter-btn");
+    const projectCards = document.querySelectorAll(".project-card");
+
+    filterBtns.forEach(btn => {
+        btn.addEventListener("click", () => {
+            filterBtns.forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+
+            const filter = btn.getAttribute("data-filter");
+            projectCards.forEach((card, idx) => {
+                const cat = card.getAttribute("data-category");
+                if (filter === "all" || cat === filter) {
+                    card.classList.remove("hidden");
+                    card.style.animation = `fadeInUp 0.4s ease ${idx * 0.05}s both`;
+                } else {
+                    card.classList.add("hidden");
+                }
+            });
+        });
+    });
+
+    /* ── Contact Form Email Sender ─────────────── */
     const contactForm = document.getElementById("contactForm");
     const toast = document.getElementById("toast");
     const toastMsg = document.getElementById("toastMessage");
@@ -593,7 +720,7 @@ Location: India`,
             e.preventDefault();
             const submitBtn = document.getElementById("submitBtn");
             const originalHTML = submitBtn.innerHTML;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending message...';
             submitBtn.disabled = true;
 
             const formData = {
@@ -615,10 +742,10 @@ Location: India`,
                     showToast(data.message, false);
                     contactForm.reset();
                 } else {
-                    showToast(data.error || "Something went wrong.", true);
+                    showToast(data.error || "Failed to process message.", true);
                 }
             } catch {
-                showToast("Network error. Please try again.", true);
+                showToast("Network dispatch error. Please verify mail connection.", true);
             }
 
             submitBtn.innerHTML = originalHTML;
@@ -627,6 +754,7 @@ Location: India`,
     }
 
     function showToast(message, isError) {
+        if (!toast || !toastMsg) return;
         toastMsg.textContent = message;
         toast.classList.toggle("error", isError);
         toast.querySelector(".toast-icon i").className = isError
@@ -636,15 +764,15 @@ Location: India`,
         setTimeout(() => toast.classList.remove("show"), 4000);
     }
 
-
-
-    /* ── Back To Top ───────────────────────────── */
+    /* ── Navigation Actions & back to top ──────── */
     const backToTop = document.getElementById("backToTop");
-    window.addEventListener("scroll", () => {
-        backToTop.classList.toggle("visible", window.scrollY > 500);
-    });
-    backToTop.addEventListener("click", () => {
-        window.scrollTo({ top: 0, behavior: "smooth" });
-    });
+    if (backToTop) {
+        window.addEventListener("scroll", () => {
+            backToTop.classList.toggle("visible", window.scrollY > 400);
+        });
+        backToTop.addEventListener("click", () => {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+    }
 
 });

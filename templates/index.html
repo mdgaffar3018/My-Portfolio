@@ -1,18 +1,18 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="midnight-gold">
 
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Mohammed Gaffar | Portfolio</title>
     <meta name="description"
-        content="Portfolio of Mohammed Gaffar — Class 12 Computer Science student passionate about Python and creative problem solving." />
+        content="Portfolio of Mohammed Gaffar — College Computer Science student passionate about Python, Backend Development, and creative problem solving." />
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap"
         rel="stylesheet" />
 
     <!-- Font Awesome Icons -->
@@ -31,7 +31,7 @@
     <div class="preloader" id="preloader">
         <div class="preloader-inner">
             <div class="preloader-circle"></div>
-            <span class="preloader-text">Loading<span class="dots">...</span></span>
+            <span class="preloader-text">Initializing Workspace<span class="dots">...</span></span>
         </div>
     </div>
 
@@ -39,25 +39,118 @@
     <nav class="navbar" id="navbar">
         <div class="nav-container">
             <a href="#hero" class="nav-logo">
-                <span class="logo-bracket">&lt;</span>MG<span class="logo-bracket"> /&gt;</span>
+                <span class="logo-bracket">&lt;</span>Gaffar<span class="logo-bracket">.dev /&gt;</span>
             </a>
 
             <ul class="nav-menu" id="navMenu">
                 <li><a href="#hero" class="nav-link active" data-section="hero">Home</a></li>
                 <li><a href="#about" class="nav-link" data-section="about">About</a></li>
                 <li><a href="#skills" class="nav-link" data-section="skills">Skills</a></li>
-                <li><a href="#projects" class="nav-link" data-section="projects">Work</a></li>
+                <li><a href="#ide-workspace" class="nav-link" data-section="ide-workspace">Console</a></li>
+                <li><a href="#projects" class="nav-link" data-section="projects">Works</a></li>
                 <li><a href="#contact" class="nav-link" data-section="contact">Contact</a></li>
             </ul>
 
             <div class="nav-actions">
-                <a href="#contact" class="nav-cta">Say Hello</a>
+                <!-- Command Palette Button -->
+                <button class="nav-action-btn" id="cmdPaletteBtn" title="Command Palette (Ctrl+K)" aria-label="Search and Actions">
+                    <i class="fas fa-search"></i>
+                    <span class="shortcut-badge">⌘K</span>
+                </button>
+
+                <!-- Theme Switcher dropdown -->
+                <div class="theme-switcher">
+                    <button class="nav-action-btn" id="themeDropdownBtn" title="Switch Theme" aria-label="Switch Theme">
+                        <i class="fas fa-palette"></i>
+                    </button>
+                    <div class="theme-menu" id="themeMenu">
+                        <button class="theme-menu-item" data-set-theme="midnight-gold">
+                            <span class="theme-color-dot" style="background:#d4a23a"></span>
+                            Midnight Gold
+                        </button>
+                        <button class="theme-menu-item" data-set-theme="cyberpunk-neon">
+                            <span class="theme-color-dot" style="background:#c084fc"></span>
+                            Cyberpunk Neon
+                        </button>
+                        <button class="theme-menu-item" data-set-theme="slate-minimalist">
+                            <span class="theme-color-dot" style="background:#64748b"></span>
+                            Slate Minimalist
+                        </button>
+                        <button class="theme-menu-item" data-set-theme="forest-emerald">
+                            <span class="theme-color-dot" style="background:#10b981"></span>
+                            Forest Emerald
+                        </button>
+                    </div>
+                </div>
+
+                <a href="#contact" class="nav-cta">Connect</a>
                 <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
                     <span></span><span></span><span></span>
                 </button>
             </div>
         </div>
     </nav>
+
+    <!-- ═══════════════ COMMAND PALETTE MODAL ═══════════════ -->
+    <div class="cmd-palette-overlay" id="cmdPalette">
+        <div class="cmd-palette-dialog glass-card">
+            <div class="cmd-palette-search">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" id="cmdSearchInput" placeholder="Type a command, section name, or theme..." autocomplete="off" spellcheck="false" />
+                <span class="esc-badge">ESC</span>
+            </div>
+            <div class="cmd-palette-results" id="cmdResults">
+                <!-- Group 1: Navigation -->
+                <div class="cmd-group">
+                    <div class="cmd-group-title">Navigation</div>
+                    <div class="cmd-item" data-action="nav" data-target="#hero">
+                        <i class="fas fa-home"></i> <span>Go to Home</span> <span class="cmd-hint">Section</span>
+                    </div>
+                    <div class="cmd-item" data-action="nav" data-target="#about">
+                        <i class="fas fa-user"></i> <span>Go to About Me</span> <span class="cmd-hint">Section</span>
+                    </div>
+                    <div class="cmd-item" data-action="nav" data-target="#skills">
+                        <i class="fas fa-code"></i> <span>Go to Skills</span> <span class="cmd-hint">Section</span>
+                    </div>
+                    <div class="cmd-item" data-action="nav" data-target="#ide-workspace">
+                        <i class="fas fa-terminal"></i> <span>Go to IDE / Console</span> <span class="cmd-hint">Section</span>
+                    </div>
+                    <div class="cmd-item" data-action="nav" data-target="#projects">
+                        <i class="fas fa-folder-open"></i> <span>Go to Works</span> <span class="cmd-hint">Section</span>
+                    </div>
+                    <div class="cmd-item" data-action="nav" data-target="#contact">
+                        <i class="fas fa-envelope"></i> <span>Go to Contact</span> <span class="cmd-hint">Section</span>
+                    </div>
+                </div>
+                <!-- Group 2: Themes -->
+                <div class="cmd-group">
+                    <div class="cmd-group-title">Switch Theme</div>
+                    <div class="cmd-item" data-action="theme" data-target="midnight-gold">
+                        <i class="fas fa-circle" style="color:#d4a23a"></i> <span>Use Midnight Gold Theme</span> <span class="cmd-hint">Appearance</span>
+                    </div>
+                    <div class="cmd-item" data-action="theme" data-target="cyberpunk-neon">
+                        <i class="fas fa-circle" style="color:#c084fc"></i> <span>Use Cyberpunk Neon Theme</span> <span class="cmd-hint">Appearance</span>
+                    </div>
+                    <div class="cmd-item" data-action="theme" data-target="slate-minimalist">
+                        <i class="fas fa-circle" style="color:#64748b"></i> <span>Use Slate Minimalist Theme</span> <span class="cmd-hint">Appearance</span>
+                    </div>
+                    <div class="cmd-item" data-action="theme" data-target="forest-emerald">
+                        <i class="fas fa-circle" style="color:#10b981"></i> <span>Use Forest Emerald Theme</span> <span class="cmd-hint">Appearance</span>
+                    </div>
+                </div>
+                <!-- Group 3: Utility -->
+                <div class="cmd-group">
+                    <div class="cmd-group-title">Utility</div>
+                    <div class="cmd-item" data-action="exec" data-target="copy-email">
+                        <i class="fas fa-copy"></i> <span>Copy Email Address</span> <span class="cmd-hint">Clipboard</span>
+                    </div>
+                    <div class="cmd-item" data-action="exec" data-target="github-profile">
+                        <i class="fab fa-github"></i> <span>Open GitHub Profile</span> <span class="cmd-hint">External Link</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- ═══════════════ HERO ═══════════════ -->
     <section class="hero" id="hero">
@@ -71,7 +164,7 @@
         <div class="hero-content">
             <div class="hero-badge">
                 <span class="badge-dot"></span>
-                Class 12 CS Student &bull; Open to Projects
+                College CS Student &bull; Software Developer
             </div>
 
             <h1 class="hero-title">
@@ -83,17 +176,16 @@
             </div>
 
             <p class="hero-description">
-                I build things with code. Class 12 Computer Science student passionate about
-                Python and creative problem solving.
+                I architect backends, design smooth interfaces, and write clean code. College Computer Science student passionate about Python, Flask, and creative engineering.
             </p>
 
             <div class="hero-buttons">
                 <a href="#projects" class="btn btn-primary">
-                    <span>View My Work</span>
+                    <span>Explore My Work</span>
                     <i class="fas fa-arrow-right"></i>
                 </a>
                 <a href="#contact" class="btn btn-outline">
-                    <span>Get In Touch</span>
+                    <span>Say Hello</span>
                     <i class="fas fa-paper-plane"></i>
                 </a>
             </div>
@@ -102,15 +194,15 @@
                 <div class="stat-item">
                     <span class="stat-number" data-target="{{ project_count }}">0</span><span
                         class="stat-suffix">+</span>
-                    <span class="stat-label">Projects Built</span>
+                    <span class="stat-label">Repos Synced</span>
                 </div>
                 <div class="stat-item">
-                    <span class="stat-number" data-target="6">0</span><span class="stat-suffix">+</span>
-                    <span class="stat-label">Skills Learned</span>
+                    <span class="stat-number" data-target="10">0</span><span class="stat-suffix">+</span>
+                    <span class="stat-label">Technologies</span>
                 </div>
                 <div class="stat-item">
                     <span class="stat-number" data-target="100">0</span><span class="stat-suffix">%</span>
-                    <span class="stat-label">Passion</span>
+                    <span class="stat-label">Execution</span>
                 </div>
             </div>
         </div>
@@ -125,9 +217,9 @@
                     <span>SQL</span><i class="fas fa-database"></i>
                     <span>Git</span><i class="fab fa-git-alt"></i>
                     <span>Flask</span><i class="fas fa-flask"></i>
+                    <span>Node.js</span><i class="fab fa-node-js"></i>
                     <span>VS Code</span><i class="fas fa-code"></i>
                 </div>
-                <!-- Duplicate for seamless scrolling -->
                 <div class="marquee-content">
                     <span>Python</span><i class="fab fa-python"></i>
                     <span>HTML5</span><i class="fab fa-html5"></i>
@@ -136,6 +228,7 @@
                     <span>SQL</span><i class="fas fa-database"></i>
                     <span>Git</span><i class="fab fa-git-alt"></i>
                     <span>Flask</span><i class="fas fa-flask"></i>
+                    <span>Node.js</span><i class="fab fa-node-js"></i>
                     <span>VS Code</span><i class="fas fa-code"></i>
                 </div>
             </div>
@@ -143,7 +236,7 @@
 
         <div class="hero-scroll">
             <a href="#about" class="scroll-indicator">
-                <span>Scroll Down</span>
+                <span>Explore Further</span>
                 <div class="scroll-mouse">
                     <div class="scroll-wheel"></div>
                 </div>
@@ -155,8 +248,9 @@
     <section class="section about" id="about">
         <div class="container">
             <div class="section-header reveal">
+                <span class="section-tag">WHO_AM_I</span>
                 <h2 class="section-title">About <span class="gradient-text">Me</span></h2>
-                <p class="section-subtitle">Get to know the person behind the code</p>
+                <p class="section-subtitle">Bridging design with programming logic</p>
             </div>
 
             <div class="about-grid">
@@ -164,7 +258,7 @@
                     <div class="image-wrapper">
                         <div class="image-frame">
                             <div class="image-placeholder">
-                                <i class="fas fa-user-astronaut"></i>
+                                <i class="fas fa-user-graduate"></i>
                             </div>
                         </div>
                         <div class="image-decoration"></div>
@@ -178,7 +272,7 @@
                                 <div class="orbit-icon" style="--i:2"><i class="fab fa-css3-alt"></i></div>
                                 <div class="orbit-icon" style="--i:3"><i class="fas fa-database"></i></div>
                                 <div class="orbit-icon" style="--i:4"><i class="fab fa-git-alt"></i></div>
-                                <div class="orbit-icon" style="--i:5"><i class="fab fa-github"></i></div>
+                                <div class="orbit-icon" style="--i:5"><i class="fab fa-js"></i></div>
                             </div>
                         </div>
                     </div>
@@ -186,17 +280,13 @@
 
                 <div class="about-content reveal reveal-right">
                     <h3 class="about-heading">
-                        A student coder building the <span class="gradient-text">future with Python</span>
+                        A college coder building the <span class="gradient-text">future with Python &amp; Web Stack</span>
                     </h3>
                     <p class="about-text">
-                        I'm a Class 12 Computer Science student with a deep passion for programming and
-                        creative problem solving. My journey in tech started with Python, and I've been
-                        hooked ever since — exploring everything from desktop apps to web development.
+                        I'm a college Computer Science student with a deep passion for writing logic, optimizing databases, and building full-stack applications. My programming journey is centered on Python, where I construct everything from automated scripts to complete web services.
                     </p>
                     <p class="about-text">
-                        I specialize in Python, Flask, SQL, and front-end technologies like HTML &amp; CSS.
-                        I love turning ideas into real, working applications and I'm always eager to
-                        learn new tools and frameworks.
+                        I specialize in creating robust web backends with Flask, managing data storage with SQL databases, and designing intuitive, highly responsive frontend layouts. I am constantly expanding my knowledge, seeking clean patterns, and tackling complex problems.
                     </p>
 
                     <div class="about-details">
@@ -210,11 +300,11 @@
                         </div>
                         <div class="detail-item">
                             <i class="fas fa-graduation-cap"></i>
-                            <span><strong>Education:</strong> Class 12 — Computer Science</span>
+                            <span><strong>Education:</strong> College — Computer Science</span>
                         </div>
                         <div class="detail-item">
                             <i class="fas fa-code"></i>
-                            <span><strong>Focus:</strong> Python &amp; Web Development</span>
+                            <span><strong>Focus:</strong> Backend Engineering &amp; Automation</span>
                         </div>
                     </div>
 
@@ -227,36 +317,74 @@
         </div>
     </section>
 
-    <!-- ═══════════════ SKILLS ═══════════════ -->
+    <!-- ═══════════════ SKILLS SECTION ═══════════════ -->
     <section class="section skills" id="skills">
         <div class="container">
             <div class="section-header reveal">
-                <h2 class="section-title">My <span class="gradient-text">Skills</span></h2>
-                <p class="section-subtitle">Technologies and tools I work with</p>
+                <span class="section-tag">TECH_STACK</span>
+                <h2 class="section-title">Technical <span class="gradient-text">Skills</span></h2>
+                <p class="section-subtitle">A collection of tools and frameworks in my repertoire</p>
             </div>
 
-            <div class="skills-grid">
+            <!-- Dashboard Tabs -->
+            <div class="skills-tabs-container reveal">
+                <div class="skills-tabs">
+                    {% for category in skills.keys() %}
+                    <button class="tab-btn {% if loop.first %}active{% endif %}" data-tab-id="{{ category|replace('&', 'and')|replace(' ', '-') }}">
+                        {% if 'Languages' in category %}
+                        <i class="fas fa-code-branch"></i>
+                        {% elif 'Frameworks' in category %}
+                        <i class="fas fa-layer-group"></i>
+                        {% else %}
+                        <i class="fas fa-database"></i>
+                        {% endif %}
+                        {{ category }}
+                    </button>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Tab Contents -->
+            <div class="skills-content-container reveal">
                 {% for category, items in skills.items() %}
-                <div class="skill-category reveal">
-                    <div class="category-header">
-                        <div class="category-icon">
-                            {% if 'Languages' in category %}
-                            <i class="fas fa-code"></i>
-                            {% else %}
-                            <i class="fas fa-tools"></i>
-                            {% endif %}
-                        </div>
-                        <h3>{{ category }}</h3>
-                    </div>
-                    <div class="skill-bars">
+                <div class="skills-pane {% if loop.first %}active{% endif %}" id="{{ category|replace('&', 'and')|replace(' ', '-') }}">
+                    <div class="skills-grid-new">
                         {% for skill in items %}
-                        <div class="skill-bar">
-                            <div class="skill-info">
-                                <span class="skill-name">{{ skill.name }}</span>
-                                <span class="skill-percent">{{ skill.level }}%</span>
+                        <div class="skill-card-new glass-card">
+                            <div class="skill-card-header">
+                                <div class="skill-card-icon">
+                                    {% if 'Python' in skill.name %}
+                                    <i class="fab fa-python"></i>
+                                    {% elif 'JavaScript' in skill.name %}
+                                    <i class="fab fa-js"></i>
+                                    {% elif 'SQL' in skill.name or 'Database' in skill.name %}
+                                    <i class="fas fa-database"></i>
+                                    {% elif 'HTML' in skill.name %}
+                                    <i class="fab fa-html5"></i>
+                                    {% elif 'Flask' in skill.name %}
+                                    <i class="fas fa-flask"></i>
+                                    {% elif 'Node' in skill.name %}
+                                    <i class="fab fa-node-js"></i>
+                                    {% elif 'Git' in skill.name %}
+                                    <i class="fab fa-git-alt"></i>
+                                    {% elif 'API' in skill.name %}
+                                    <i class="fas fa-network-wired"></i>
+                                    {% else %}
+                                    <i class="fas fa-terminal"></i>
+                                    {% endif %}
+                                </div>
+                                <div class="skill-card-meta">
+                                    <h4 class="skill-card-title">{{ skill.name }}</h4>
+                                </div>
                             </div>
-                            <div class="skill-track">
-                                <div class="skill-fill" data-width="{{ skill.level }}"></div>
+                            <div class="skill-card-body">
+                                <div class="circular-progress-wrapper">
+                                    <svg class="circular-progress-svg" viewBox="0 0 80 80">
+                                        <circle class="progress-ring-bg" cx="40" cy="40" r="34"></circle>
+                                        <circle class="progress-ring-fill" cx="40" cy="40" r="34" data-pct="{{ skill.level }}"></circle>
+                                    </svg>
+                                    <div class="progress-percentage-label">0%</div>
+                                </div>
                             </div>
                         </div>
                         {% endfor %}
@@ -267,29 +395,83 @@
         </div>
     </section>
 
-    <!-- ═══════════════ INTERACTIVE TERMINAL ═══════════════ -->
-    <section class="section terminal-section" id="terminal">
+    <!-- ═══════════════ MOCK IDE / CONSOLE SECTION ═══════════════ -->
+    <section class="section ide-section" id="ide-workspace">
         <div class="container">
             <div class="section-header reveal">
-                <h2 class="section-title">Command <span class="gradient-text">Line</span></h2>
-                <p class="section-subtitle">Interact with my portfolio using terminal commands</p>
+                <span class="section-tag">INTERACTIVE_TERMINAL</span>
+                <h2 class="section-title">Developer <span class="gradient-text">Console</span></h2>
+                <p class="section-subtitle">Interact with my live workspace filesystem or type bash commands</p>
             </div>
-            <div class="terminal-container reveal">
-                <div class="terminal-header">
-                    <div class="terminal-buttons">
-                        <div class="t-btn close"></div>
-                        <div class="t-btn minimize"></div>
-                        <div class="t-btn maximize"></div>
+
+            <!-- IDE Container -->
+            <div class="ide-container glass-card reveal">
+                <!-- Sidebar File Explorer -->
+                <div class="ide-sidebar">
+                    <div class="sidebar-header">
+                        <span>WORKSPACE [GAFFAR]</span>
                     </div>
-                    <div class="terminal-title">bash - mdgaffar</div>
+                    <div class="sidebar-tree">
+                        <div class="tree-folder open">
+                            <span class="folder-name"><i class="fas fa-folder-open"></i> portfolio</span>
+                            <div class="folder-contents">
+                                <div class="tree-file active" data-file="terminal.sh">
+                                    <i class="fas fa-terminal text-accent"></i> <span>terminal.sh</span>
+                                </div>
+                                <div class="tree-file" data-file="about.py">
+                                    <i class="fab fa-python text-python"></i> <span>about.py</span>
+                                </div>
+                                <div class="tree-file" data-file="skills.json">
+                                    <i class="fas fa-brackets-curly text-json">{}</i> <span>skills.json</span>
+                                </div>
+                                <div class="tree-file" data-file="contact.sh">
+                                    <i class="fas fa-file-code text-sh"></i> <span>contact.sh</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="terminal-body" id="terminalBody">
-                    <div class="terminal-line">Welcome to Gaffar's interactive portfolio terminal.</div>
-                    <div class="terminal-line">Type 'help' to see a list of available commands.</div>
-                    <div class="terminal-input-line">
-                        <span class="terminal-prompt">gaffar@portfolio:~$</span>
-                        <input type="text" class="terminal-input" id="terminalInput" autocomplete="off"
-                            spellcheck="false">
+
+                <!-- Main Code Area / Console -->
+                <div class="ide-main">
+                    <!-- Editor Tabs -->
+                    <div class="ide-tabs" id="editorTabs">
+                        <div class="ide-tab active" data-file="terminal.sh">
+                            <i class="fas fa-terminal"></i>
+                            <span>terminal.sh</span>
+                        </div>
+                    </div>
+
+                    <!-- Editor Body -->
+                    <div class="ide-editor-body">
+                        <!-- Terminal View (Visible by default) -->
+                        <div class="ide-pane active" id="pane-terminal-sh">
+                            <div class="terminal-body" id="terminalBody">
+                                <div class="terminal-line">Welcome to Gaffar's interactive portfolio terminal shell.</div>
+                                <div class="terminal-line">Type 'help' to see a list of available commands.</div>
+                                <div class="terminal-input-line">
+                                    <span class="terminal-prompt">gaffar@portfolio:~$</span>
+                                    <input type="text" class="terminal-input" id="terminalInput" autocomplete="off" spellcheck="false">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Code Viewer Panes (Loaded on demand in JS) -->
+                        <div class="ide-pane" id="pane-code-viewer">
+                            <pre class="code-output"><code id="codeViewerContent"></code></pre>
+                        </div>
+                    </div>
+                    
+                    <!-- Editor Status Bar -->
+                    <div class="ide-statusbar">
+                        <div class="status-left">
+                            <span><i class="fas fa-code-branch"></i> main</span>
+                            <span><i class="fas fa-sync-alt fa-spin"></i> Connected</span>
+                        </div>
+                        <div class="status-right">
+                            <span>UTF-8</span>
+                            <span>Python / Bash</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -300,17 +482,20 @@
     <section class="section projects" id="projects">
         <div class="container">
             <div class="section-header reveal">
+                <span class="section-tag">WORKS_GALLERY</span>
                 <h2 class="section-title">My <span class="gradient-text">Works</span></h2>
-                <p class="section-subtitle">Projects I've built and shipped</p>
+                <p class="section-subtitle">GitHub repositories synced in real-time</p>
             </div>
 
+            <!-- Filters -->
             <div class="project-filters reveal">
-                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn active" data-filter="all">All Repos</button>
                 {% for cat in categories %}
                 <button class="filter-btn" data-filter="{{ cat }}">{{ cat|capitalize }}</button>
                 {% endfor %}
             </div>
 
+            <!-- Grid -->
             <div class="projects-grid" id="projectsGrid">
                 {% for project in projects %}
                 <div class="project-card reveal" data-category="{{ project.category }}">
@@ -348,24 +533,22 @@
     <section class="section contact" id="contact">
         <div class="container">
             <div class="section-header reveal">
-                <h2 class="section-title">Get In <span class="gradient-text">Touch</span></h2>
-                <p class="section-subtitle">Have a project in mind or just want to say hello?</p>
+                <span class="section-tag">GET_IN_TOUCH</span>
+                <h2 class="section-title">Connect <span class="gradient-text">With Me</span></h2>
+                <p class="section-subtitle">Reach out for collaborations, project inquiries, or questions</p>
             </div>
 
             <div class="contact-grid">
                 <div class="contact-info reveal reveal-left">
                     <h3>Let's build something <span class="gradient-text">amazing</span> together</h3>
-                    <p>Fill out the form and I'll get back to you. Or reach me directly at
-                        <a href="mailto:gaffarofficial3018@gmail.com"
-                            style="color:var(--accent-primary)">gaffarofficial3018@gmail.com</a>
-                    </p>
+                    <p>Submit the form to send me an email, and I will get back to you as soon as possible. Alternatively, contact me directly:</p>
 
                     <div class="contact-cards">
                         <div class="contact-card glass-card">
                             <div class="contact-card-icon"><i class="fas fa-envelope"></i></div>
                             <div>
                                 <h4>Email</h4>
-                                <span>gaffarofficial3018@gmail.com</span>
+                                <span><a href="mailto:gaffarofficial3018@gmail.com" class="link-hover">gaffarofficial3018@gmail.com</a></span>
                             </div>
                         </div>
                         <div class="contact-card glass-card">
@@ -378,10 +561,12 @@
                     </div>
 
                     <div class="social-links">
-                        <a href="https://github.com/mdgaffar3018" class="social-link" aria-label="GitHub"
-                            target="_blank"><i class="fab fa-github"></i></a>
-                        <a href="mailto:gaffarofficial3018@gmail.com" class="social-link" aria-label="Email"><i
-                                class="fas fa-envelope"></i></a>
+                        <a href="https://github.com/mdgaffar3018" class="social-link" aria-label="GitHub" target="_blank">
+                            <i class="fab fa-github"></i>
+                        </a>
+                        <a href="mailto:gaffarofficial3018@gmail.com" class="social-link" aria-label="Email">
+                            <i class="fas fa-envelope"></i>
+                        </a>
                     </div>
                 </div>
 
@@ -403,7 +588,7 @@
                             <div class="form-line"></div>
                         </div>
                         <div class="form-group">
-                            <textarea id="contactMessage" name="message" rows="5" required placeholder=" "></textarea>
+                            <textarea id="contactMessage" name="message" rows="4" required placeholder=" "></textarea>
                             <label for="contactMessage">Your Message</label>
                             <div class="form-line"></div>
                         </div>
@@ -422,13 +607,11 @@
         <div class="container">
             <div class="footer-content">
                 <div class="footer-logo">
-                    <span class="logo-bracket">&lt;</span>Gaffar<span class="logo-bracket"> /&gt;</span>
+                    <span class="logo-bracket">&lt;</span>Gaffar<span class="logo-bracket">.dev /&gt;</span>
                 </div>
-                <p class="footer-text">Designed &amp; Built with <i class="fas fa-heart"
-                        style="color:var(--accent-primary)"></i> by Mohammed Gaffar</p>
+                <p class="footer-text">Designed &amp; Built with <i class="fas fa-heart text-accent"></i> by Mohammed Gaffar</p>
                 <div class="footer-links">
-                    <a href="https://github.com/mdgaffar3018" aria-label="GitHub" target="_blank"><i
-                            class="fab fa-github"></i></a>
+                    <a href="https://github.com/mdgaffar3018" aria-label="GitHub" target="_blank"><i class="fab fa-github"></i></a>
                     <a href="mailto:gaffarofficial3018@gmail.com" aria-label="Email"><i class="fas fa-envelope"></i></a>
                 </div>
                 <p class="footer-copy">&copy; 2026 Mohammed Gaffar. All rights reserved.</p>

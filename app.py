@@ -167,14 +167,20 @@ def fetch_github_projects():
 
 SKILLS = {
     "Languages": [
-        {"name": "Python", "level": 90},
-        {"name": "HTML", "level": 85},
-        {"name": "CSS", "level": 80},
-        {"name": "SQL", "level": 75},
+        {"name": "Python", "level": 92},
+        {"name": "JavaScript", "level": 85},
+        {"name": "SQL", "level": 80},
+        {"name": "HTML5 & CSS3", "level": 90},
     ],
-    "Tools & Workflow": [
-        {"name": "VS Code", "level": 88},
-        {"name": "Git & GitHub", "level": 80},
+    "Frameworks & Libraries": [
+        {"name": "Flask", "level": 88},
+        {"name": "Node.js & Express", "level": 70},
+        {"name": "REST APIs", "level": 85},
+    ],
+    "Databases & Tools": [
+        {"name": "SQLite / PostgreSQL", "level": 80},
+        {"name": "Git & GitHub", "level": 88},
+        {"name": "VS Code", "level": 92},
     ],
 }
 
